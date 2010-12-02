@@ -13,6 +13,7 @@ Parser::Parser(char *file)
 
 int Parser::parse(void)
 {
+    int a = 5;
 	//open the text file for reading
         ifstream in(inputFile);
 
