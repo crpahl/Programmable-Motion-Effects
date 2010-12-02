@@ -1,4 +1,6 @@
 #include "mainwindow.h"
+#include <iostream>
+
 MainWindow::MainWindow(QWidget *parent): QDialog (parent)
 {
     /*myWin = new CSWindow(parent);
@@ -29,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent): QDialog (parent)
     //bLayout->addWidget(quitButton);
     layout->addLayout(bLayout);
     setGeometry(myWin->geometry());
-    _title="Test";
+    _title="Testing...";
     setWindowTitle(tr(_title));
     setLayout(layout);
 }
