@@ -63,6 +63,7 @@ void CSWindow::draw()
     glRotatef(180, 1, 0, 0);
     glRotatef(rotX,1.0,0.0,0.0);
     glRotatef(rotY,0.,1.0,0.0);
+    glTranslatef(-600,-300,0);
 
 
     glBegin(GL_LINES);
@@ -200,7 +201,7 @@ void CSWindow::render()
     //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     for(int i = 0; i < num_taos; i++)
     {
-        //taos[i].drawObjects();
+        taos[i].drawObjects();
         taos[i].drawBiPlanes();
 
     }
