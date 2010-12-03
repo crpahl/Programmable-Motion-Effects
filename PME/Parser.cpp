@@ -4,6 +4,7 @@
 #include <sstream>
 #include <stdlib.h>
 #include <string.h>
+#include <QDebug>
 
 Parser::Parser(char *file)
 {
@@ -13,7 +14,6 @@ Parser::Parser(char *file)
 
 int Parser::parse(void)
 {
-    int a = 5;
 	//open the text file for reading
         ifstream in(inputFile);
 
@@ -261,20 +261,20 @@ void Parser::printObjects()
 	vector<Object>::iterator i;
 	int count = 0;
 
-	//Printing all objects
+        //Printing all objects
 	for (i = objects.begin(); i != objects.end(); i++)
 	{
 		count = 0;
 
-		cout << "Object:\n{\n";
-		cout << "\tname:\t" << i->name << "\n";
+                cerr << "Object:\n{\n";
+                cerr << "\tname:\t" << i->name << "\n";
 		if(i->globalColor)
 		{
-			cout << "\tcolor:\t";
-			cout << i->color.r << " ";
-			cout << i->color.g << " ";
-			cout << i->color.b << " ";
-			cout << i->color.a << "\n";
+                        cerr << "\tcolor:\t";
+                        cerr << i->color.r << " ";
+                        cerr << i->color.g << " ";
+                        cerr << i->color.b << " ";
+                        cerr << i->color.a << "\n";
 		}
 
 		vector<Sample>::iterator s;
@@ -284,32 +284,32 @@ void Parser::printObjects()
 		//Print all object samples
 		for(s = samples.begin(); s != samples.end(); s++)
 		{
-			cout << "\tsample " << ++count << ":\n\t{\n";
-			cout << "\t\ttime:\t" << s->time << "\n";
+                        cerr << "\tsample " << ++count << ":\n\t{\n";
+                        cerr << "\t\ttime:\t" << s->time << "\n";
 
 			for(unsigned int j = 0; j < s->nPlanes; j++)
 			{
-				cout << "\t\tPlane " << j << ":\n";
+                                cerr << "\t\tPlane " << j << ":\n";
 
 				for(unsigned int k = 0; k < s->planes[j].nPoints; k++)
 				{
-					cout << "\t\t\t" << s->planes[j].points[k].x << " ";
-					cout << s->planes[j].points[k].y << " ";
-					cout << s->planes[j].points[k].z << " ";
+                                        cerr << "\t\t\t" << s->planes[j].points[k].x << " ";
+                                        cerr << s->planes[j].points[k].y << " ";
+                                        cerr << s->planes[j].points[k].z << " ";
 
 					if(!(i->globalColor))
 					{
-						cout << s->planes[j].points[k].color.r << " ";
-						cout << s->planes[j].points[k].color.g << " ";
-						cout << s->planes[j].points[k].color.b << " ";
-						cout << s->planes[j].points[k].color.a << " ";
+                                                cerr << s->planes[j].points[k].color.r << " ";
+                                                cerr << s->planes[j].points[k].color.g << " ";
+                                                cerr << s->planes[j].points[k].color.b << " ";
+                                                cerr << s->planes[j].points[k].color.a << " ";
 					}
-					cout << "\n";
+                                        cerr << "\n";
 				}
 			}
-			cout << "\t}\n";
+                        cerr << "\t}\n";
 		}
-		cout << "}\n\n";
+                cerr << "}\n\n";
 	}
 }
 

@@ -1,37 +1,38 @@
 #include "mainwindow.h"
 #include <iostream>
+#include <QMainWindow>
 
 MainWindow::MainWindow(QWidget *parent): QDialog (parent)
 {
-    /*myWin = new CSWindow(parent);
-    quitButton = new QPushButton(tr("quit"));
-    connect(quitButton,SIGNAL(clicked()),qApp,SLOT(quit()));
-
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(myWin);
-    QHBoxLayout *bLayout = new QHBoxLayout;
-    bLayout->addStretch();
-
-    bLayout->addWidget(quitButton);
-    layout->addLayout(bLayout);
-    setGeometry(myWin->geometry());
-    _title="So I put my hands up they playin ma song!";
-    setWindowTitle(tr(_title));
-    setLayout(layout);
-
-    createActions();
-    createMenus();*/
-
     myWin = new CSWindow(parent);
-    //connect(quitButton,SIGNAL(clicked()),qApp,SLOT(quit()));
     QVBoxLayout *layout = new QVBoxLayout;
+
+    menuBar = new QMenuBar(parent);
     layout->addWidget(myWin);
+    //layout->addWidget(menuBar);
+
+    // Adding button(s)
+    openButton = new QPushButton(tr("open"));
+    debugButton = new QPushButton(tr("debug"));
+    connect(openButton, SIGNAL(clicked()), myWin, SLOT(open()));
+    connect(debugButton, SIGNAL(clicked()), myWin, SLOT(debug()));
     QHBoxLayout *bLayout = new QHBoxLayout;
+    bLayout->addWidget(debugButton);
     bLayout->addStretch();
-    //bLayout->addWidget(quitButton);
+    bLayout->addWidget(openButton);
     layout->addLayout(bLayout);
-    setGeometry(myWin->geometry());
-    _title="Testing...";
+
+    _title="Programmable Motion Effects";
     setWindowTitle(tr(_title));
+    setGeometry(myWin->geometry());
     setLayout(layout);
+}
+
+void MainWindow::createMenus()
+{
+    fileMenu = new QMenu(tr("&File"), this);
+    //fileMenu->addAction(openAct);
+    //fileMenu->addAction(exitAct);
+
+    menuBar->addMenu(fileMenu);
 }

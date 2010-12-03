@@ -3,6 +3,7 @@
 #include "cswindow.h"
 #include <QSpinBox>
 #include <QSlider>
+#include <QMainWindow>
 
 class MainWindow : public QDialog
 {
@@ -13,19 +14,16 @@ public:
 private:
     void createMenus();
 
-    QMenuBar *menuBar;
     // menu
+    QMenuBar *menuBar;
     QMenu *fileMenu;
-    QMenu *viewMenu;
-    QMenu *halftoneMenu;
-    QMenu *helpMenu;
+    QMenu *debugMenu;
 
-    QPushButton *animateButton;
-    QPushButton *quitButton;
+    // button(s)
+    QPushButton *openButton;
+    QPushButton *debugButton;
+
     CSWindow *myWin;
-    QSpinBox *selFace;
-    QLabel *faceLabel;
-    QSlider *rotSlider;
     char *_title;
 };
 

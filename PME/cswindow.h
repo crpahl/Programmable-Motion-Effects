@@ -4,6 +4,7 @@
 #include <QtGui>
 #include <cstdlib> 
 #include <ctime> 
+#include "Parser.h"
 #define PI 3.14159
 using namespace std;
 
@@ -18,7 +19,8 @@ public:
 signals:
 	void setSlider(int r);
 public slots:
-
+        void open();
+        void debug();
 protected:
 	void initializeGL();
 	void resizeGL(int width, int height);
@@ -29,6 +31,8 @@ protected:
 private:
 
         void draw();
+
+        Parser *p;
 	QPoint lastPos;
 	GLfloat rotX;
 	GLfloat rotY;

@@ -1,6 +1,6 @@
 QT += opengl
-TARGET = PME
 TEMPLATE = app
+TARGET = PME
 OTHER_FILES += \
     input_test.txt
 

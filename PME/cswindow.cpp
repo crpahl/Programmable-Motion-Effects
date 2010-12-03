@@ -10,6 +10,7 @@ CSWindow::CSWindow(QWidget *parent) : QGLWidget(parent)
         setFocusPolicy(Qt::StrongFocus);    // Detect key events
         rotX = -145;
         rotY = -215;
+        p = NULL;
 }
 void CSWindow::initializeGL()
 {
@@ -70,6 +71,10 @@ void CSWindow::draw()
         glVertex3f(0,0,1000);
      glEnd();
 }
+
+
+/***** Mouse and Key Events *****/
+
 void CSWindow::mousePressEvent(QMouseEvent *event)
 {
 	lastPos = event->pos();
@@ -120,3 +125,28 @@ void CSWindow::keyPressEvent(QKeyEvent *event)
     updateGL();
 }
 
+/***** Connected Buttons *****/
+
+void CSWindow::open()
+{
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Open File"), QDir::currentPath());
+
+    if(!fileName.isEmpty())
+    {
+        //converint string to char
+        QByteArray ba = fileName.toLatin1();
+        char *c_str = ba.data();
+
+        p = new Parser(c_str);
+
+        if((*p).parse())
+            cerr << "success";
+    }
+}
+
+void CSWindow::debug()
+{
+    if(p != NULL)
+        (*p).printObjects();
+}
