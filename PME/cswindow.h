@@ -4,7 +4,7 @@
 #include <QtGui>
 #include <cstdlib> 
 #include <ctime> 
-#include <TAO.h>
+#include "TAO.h"
 #include <vector>
 #include "Parser.h"
 #define PI 3.14159
