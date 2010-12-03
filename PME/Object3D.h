@@ -17,6 +17,7 @@ struct point3D{
 	float z;
 
 	point3D& operator=(MyPoint &b);
+        bool operator==(point3D &b);
 };
 
 struct color3D{

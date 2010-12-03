@@ -26,6 +26,9 @@ struct biPlane3D{
         float time1,time2;
         point3D points[4];
         color3D colors[4];
+
+
+        bool operator==(biPlane3D &b);
 };
 
 
@@ -33,6 +36,7 @@ struct biPlane3D{
 class TAO
 {
 public:
+        TAO();
 	TAO(Object obj);
 	~TAO(void);
 

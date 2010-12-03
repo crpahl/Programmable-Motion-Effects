@@ -4,8 +4,20 @@
 #include <vector>
 #include <iostream>
 
+bool biPlane3D::operator==(biPlane3D &b){
+    if(( this->points[0] == b.points[0]  &&
+         this->points[1] == b.points[1] )||
+       ( this->points[0] == b.points[1] &&
+         this->points[1] == b.points[0] )
+
+       )
+        return true;
+    return false;
+}
 
 
+TAO::TAO(){
+}
 
 TAO::TAO(Object obj)
 {
@@ -67,10 +79,12 @@ void TAO::initTAO()
 void TAO::createBiPlanes(){
     int totalPlanepts;
     int count = 0;
+    int t;
     //Get the initital samples
     for(int i = 0; i < this->obj_amt - 1; i++){
         // this->objects[i]; this will be the initital object
-        for(int l; l < this->objects[i].getTotal_Planes(); l ++){
+        int temp = this->objects[i].getTotal_Planes();
+        for(int l = 0; l < this->objects[i].getTotal_Planes(); l ++){
             totalPlanepts = this->objects[i].getPlane(l).amt_verts;
             for(int r = 0; r < totalPlanepts ; r++){
                 biPlane3D newbiPlane;
@@ -87,8 +101,21 @@ void TAO::createBiPlanes(){
                 newbiPlane.colors[2] = this->objects[i + 1].getPlane(l).colors[r];
                 newbiPlane.colors[3] = this->objects[i + 1].getPlane(l).colors[(r + 1)% totalPlanepts];
 
-                this->bi_planes[count] = newbiPlane;
-                count++;
+                t = count;
+                bool fma = false;
+                for(int s = 0; s < t; s++)
+                {
+                    if(newbiPlane == bi_planes[s])
+                    {
+                        fma = true;
+                        break;
+                    }
+                }
+
+                if(!fma){
+                    this->bi_planes[count] = newbiPlane;
+                    count++;
+                }
             }
 
         }
@@ -101,13 +128,14 @@ void TAO::createBiPlanes(){
 
 void TAO::drawBiPlanes(){
 
+
     for(int i = 0; i < this->biPlanes_amt; i++){
-        glColor3f(0.0,0.0,1.0);
-        glBegin(GL_POLYGON);
+        glColor4f(0 ,0 , 1, 0.3);
+        glBegin(GL_QUADS);
             glVertex3f(this->bi_planes[i].points[0].x, this->bi_planes[i].points[0].y, this->bi_planes[i].points[0].z);
-            glVertex3f(this->bi_planes[i].points[1].x, this->bi_planes[i].points[1].y, this->bi_planes[i].points[1].z);
             glVertex3f(this->bi_planes[i].points[2].x, this->bi_planes[i].points[2].y, this->bi_planes[i].points[2].z);
             glVertex3f(this->bi_planes[i].points[3].x, this->bi_planes[i].points[3].y, this->bi_planes[i].points[3].z);
+            glVertex3f(this->bi_planes[i].points[1].x, this->bi_planes[i].points[1].y, this->bi_planes[i].points[1].z);
         glEnd();
         glFlush();
     }

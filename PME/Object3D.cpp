@@ -18,6 +18,12 @@ point3D& point3D::operator=(MyPoint &b){
 	return *this;
 }
 
+bool point3D::operator==(point3D &b){
+    if(this->x == b.x && this->y == b.y && this->z == b.z)
+        return true;
+    return false;
+}
+
 color3D& color3D::operator=(Color &_b){
 	//color3D a;
 	
@@ -122,11 +128,23 @@ void Object3D::makeDrawArray(){
 void Object3D::drawObject(){
 	this->makeDrawArray();
 	
+        /*glLoadIdentity();
+        glPushMatrix();
+        glColor3f(1.0,1.0,0);
+        glBegin(GL_POLYGON);
+                glVertex3f(0,0,0);
+                glVertex3f(50,100,0);
+                glVertex3f(100,0,0);
+         glEnd();
+         glFlush();
+         glPopMatrix();*/
+
+
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glColorPointer(4, GL_FLOAT,0,this->obj_colors);
 	glVertexPointer(3, GL_FLOAT,0,this->obj_verts);
-	glDrawArrays(GL_POLYGON,0,this->total_verts);
+        glDrawArrays(GL_QUADS,0,this->total_verts);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 
