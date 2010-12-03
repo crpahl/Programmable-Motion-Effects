@@ -10,7 +10,8 @@ HEADERS += \
     cswindow.h \
     TAO.h \
     Object3D.h \
-    BiPlane.h
+    Vector.h \
+    bilinear.h
 
 SOURCES += \
     Parser.cpp \
@@ -19,4 +20,5 @@ SOURCES += \
     cswindow.cpp \
     TAO.cpp \
     Object3D.cpp \
-    BiPlane.cpp
+    Vector.cc \
+    bilinear.cc
