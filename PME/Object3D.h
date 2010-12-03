@@ -33,7 +33,7 @@ struct plane3D{
 	point3D points[MAX_PLANE_POINTS];
 	color3D colors[MAX_PLANE_POINTS];
 
-	plane3D operator=(Sample &b);
+        //plane3D operator=(Sample &b);
 };
 
 class Object3D
@@ -45,8 +45,13 @@ public:
 
 	void setTime(float t);
 	float getTime();
-	int getTotal_Verts();
-	void drawObject();
+
+        int getTotal_Verts();
+        int getTotal_Planes();
+
+        plane3D getPlane(int i);
+
+        void drawObject();
 	void makeDrawArray();
 
 	void setTotalVerts();

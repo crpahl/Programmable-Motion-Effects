@@ -5,6 +5,8 @@
 #include <iostream>
 
 
+
+
 TAO::TAO(Object obj)
 {
 	this->obj = obj;
@@ -63,26 +65,54 @@ void TAO::initTAO()
 
 
 void TAO::createBiPlanes(){
-	//	plane3D planes[MAX_PLANE_AMOUNT];
-	//  GLfloat obj_colors[MAX_VERTICIES];
+    int totalPlanepts;
+    int count = 0;
+    //Get the initital samples
+    for(int i = 0; i < this->obj_amt - 1; i++){
+        // this->objects[i]; this will be the initital object
+        for(int l; l < this->objects[i].getTotal_Planes(); l ++){
+            totalPlanepts = this->objects[i].getPlane(l).amt_verts;
+            for(int r = 0; r < totalPlanepts ; r++){
+                biPlane3D newbiPlane;
+                newbiPlane.time1 = this->objects[i].getTime();
+                newbiPlane.time2 = this->objects[i + 1].getTime();
 
-	//struct plane3D{
-	//int amt_verts; //Size of arrays holding both colors and points
-	//point3D points[MAX_PLANE_POINTS];
-	//color3D colors[MAX_PLANE_POINTS];
-	
+                newbiPlane.points[0] = this->objects[i].getPlane(l).points[r];
+                newbiPlane.points[1] = this->objects[i].getPlane(l).points[(r + 1)% totalPlanepts];
+                newbiPlane.points[2] = this->objects[i + 1].getPlane(l).points[r];
+                newbiPlane.points[3] = this->objects[i + 1].getPlane(l).points[(r + 1)% totalPlanepts];
 
-	/*for (int i=0; i < this->obj_amt-1; i++){
-		this->objects[i];
-	
-	}*/
+                newbiPlane.colors[0] = this->objects[i].getPlane(l).colors[r];
+                newbiPlane.colors[1] = this->objects[i].getPlane(l).colors[(r + 1)% totalPlanepts];
+                newbiPlane.colors[2] = this->objects[i + 1].getPlane(l).colors[r];
+                newbiPlane.colors[3] = this->objects[i + 1].getPlane(l).colors[(r + 1)% totalPlanepts];
 
+                this->bi_planes[count] = newbiPlane;
+                count++;
+            }
 
+        }
 
+    }
+
+    this->biPlanes_amt = count;
 }
 	
 
+void TAO::drawBiPlanes(){
 
+    for(int i = 0; i < this->biPlanes_amt; i++){
+        glColor3f(0.0,0.0,1.0);
+        glBegin(GL_POLYGON);
+            glVertex3f(this->bi_planes[i].points[0].x, this->bi_planes[i].points[0].y, this->bi_planes[i].points[0].z);
+            glVertex3f(this->bi_planes[i].points[1].x, this->bi_planes[i].points[1].y, this->bi_planes[i].points[1].z);
+            glVertex3f(this->bi_planes[i].points[2].x, this->bi_planes[i].points[2].y, this->bi_planes[i].points[2].z);
+            glVertex3f(this->bi_planes[i].points[3].x, this->bi_planes[i].points[3].y, this->bi_planes[i].points[3].z);
+        glEnd();
+        glFlush();
+    }
+
+}
 
 void TAO::drawObjects(){
 

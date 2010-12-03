@@ -52,6 +52,14 @@ int Object3D::getTotal_Verts(){
 	return total_verts;
 }
 
+int Object3D::getTotal_Planes(){
+    return total_planes;
+}
+
+plane3D Object3D::getPlane(int i){
+    return this->planes[i];
+}
+
 void Object3D::setTime(float t){
 	this->time = t;
 }
