@@ -30,8 +30,8 @@ public:
     gaze;			// gaze is the direction of the camera
     ONB basis;		// basis is the orthonormal basis
     float s;		// s is the distance of the image plane from the centre of projection
-    float au,av,	// a(u,v) are the lower left corner of the image plane
-    bu,bv;		// b(u,v) are the upper right corner of the image plane (see lecture notes)
+    float au,av,	// a(u,v) are the lower left corner of the image plane (viewing rectangle)
+    bu,bv;		// b(u,v) are the upper right corner of the image plane (viewing rectangle) (see lecture notes)
     screen_res_t Nx, Ny;// Nx, Ny, are the number of pixels in the x and y direction of the image plane
     Camera(); // default constructor
     Camera(

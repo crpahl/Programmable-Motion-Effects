@@ -3,7 +3,7 @@
 #include <math.h>
 #include <iostream>
 
-TAO taos[2];
+TAO taos[10];
 int num_taos;
 
 CSWindow::CSWindow(QWidget *parent) : QGLWidget(parent)
@@ -29,12 +29,13 @@ void CSWindow::initializeGL()
 void CSWindow::resizeGL(int width, int height)
 {
         glLoadIdentity();
-        //gluLookAt(1000, 1000, 1000, 0, 0, 0, 0, 1, 0);
 
         GLdouble aspect, theta, n, f, theta_radian, theta_2_radian, top, bott,left, right;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+
         glViewport(0,0,(GLsizei) width, (GLsizei) height);
+
 	aspect = (GLdouble)width/(GLdouble)height;
 	theta = 60.0; theta_radian = theta*PI/180.0;
 	theta_2_radian = theta_radian/2.0;
@@ -44,6 +45,7 @@ void CSWindow::resizeGL(int width, int height)
 	bott = -top;
 	right = top*aspect;
 	left = -right;
+
         glFrustum(left,right, bott, top, n, f);
 }
 void CSWindow::paintGL()

@@ -7,6 +7,8 @@ Author: Herb Yang, March 9, 2010 - modified based on a version by Daniel Neilson
 Camera::Camera(){}
 
 // Initialize the camera. Return 1 iff successful
+// INITIALIZE:m _X _Y should be the values of the ViewPort.
+// bu,bv,au,av should be the values of the frustrum.
 Camera::Camera(			// constructor
         Vector _up,  Vector _gaze,  Vector _eye,
         float _viewDist,
@@ -53,7 +55,7 @@ Ray Camera::getRayThroughPixel( screen_res_t x, screen_res_t y)  {
     Ray ray;		// the ray we're returning
     Vector pos;	// the pixel location in UVW coordinate
     ray.o = eye;
-    int tempx, tempy;
+    /*int tempx, tempy;
     float tempfx, tempfy;
     tempx = (int) rand();
     tempfx = float(tempx %RANGE);
@@ -62,10 +64,12 @@ Ray Camera::getRayThroughPixel( screen_res_t x, screen_res_t y)  {
     tempfy = float(tempy % RANGE);// temp x and temp y are in the range of 0 to RANGE
 
     tempfx = tempfx/RANGE;
-    tempfy = tempfy/RANGE;
+    tempfy = tempfy/RANGE;*/
 
-    pos.x(au + (bu -au)*(x+tempfx)/(Nx-1));
-    pos.y(av + (bv -av)*(y+tempfy)/(Ny-1));
+    //pos.x(au + (bu -au)*(x+tempfx)/(Nx-1));
+    //pos.y(av + (bv -av)*(y+tempfy)/(Ny-1));
+    pos.x(au + (bu -au)*(x+0.5f)/(Nx-1));
+    pos.y(av + (bv -av)*(y+0.5f)/(Ny-1));
     pos.z(-s);
 
     // Convert the uvw coordinates into xyz coordinates, and place the result
