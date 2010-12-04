@@ -130,6 +130,17 @@ void TAO::drawBiPlanes(){
 
 
     for(int i = 0; i < this->biPlanes_amt; i++){
+        //Outline border of patches with black solid lines
+        glColor4f(0 ,0 , 0, 1);
+        glBegin(GL_LINE_LOOP);
+            glVertex3f(this->bi_planes[i].points[0].x, this->bi_planes[i].points[0].y, this->bi_planes[i].points[0].z);
+            glVertex3f(this->bi_planes[i].points[2].x, this->bi_planes[i].points[2].y, this->bi_planes[i].points[2].z);
+            glVertex3f(this->bi_planes[i].points[3].x, this->bi_planes[i].points[3].y, this->bi_planes[i].points[3].z);
+            glVertex3f(this->bi_planes[i].points[1].x, this->bi_planes[i].points[1].y, this->bi_planes[i].points[1].z);
+        glEnd();
+        glFlush();
+
+        //Draw the bi-linear patches
         glColor4f(0 ,0 , 1, 0.3);
         glBegin(GL_QUADS);
             glVertex3f(this->bi_planes[i].points[0].x, this->bi_planes[i].points[0].y, this->bi_planes[i].points[0].z);
