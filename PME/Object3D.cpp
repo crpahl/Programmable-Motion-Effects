@@ -127,17 +127,6 @@ void Object3D::makeDrawArray(){
 
 void Object3D::drawObject(){
 	this->makeDrawArray();
-	
-        /*glLoadIdentity();
-        glPushMatrix();
-        glColor3f(1.0,1.0,0);
-        glBegin(GL_POLYGON);
-                glVertex3f(0,0,0);
-                glVertex3f(50,100,0);
-                glVertex3f(100,0,0);
-         glEnd();
-         glFlush();
-         glPopMatrix();*/
 
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);

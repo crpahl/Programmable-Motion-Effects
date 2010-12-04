@@ -14,6 +14,7 @@ CSWindow::CSWindow(QWidget *parent) : QGLWidget(parent)
         rotX = -145;
         rotY = -215;
         displayPatches = false;
+        lock = false;
         p = NULL;
 }
 void CSWindow::initializeGL()
@@ -27,6 +28,9 @@ void CSWindow::initializeGL()
 }
 void CSWindow::resizeGL(int width, int height)
 {
+        glLoadIdentity();
+        //gluLookAt(1000, 1000, 1000, 0, 0, 0, 0, 1, 0);
+
         GLdouble aspect, theta, n, f, theta_radian, theta_2_radian, top, bott,left, right;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -35,12 +39,12 @@ void CSWindow::resizeGL(int width, int height)
 	theta = 60.0; theta_radian = theta*PI/180.0;
 	theta_2_radian = theta_radian/2.0;
 	n = 1.0;
-        f = 1500.0;
+        f = 5000.0;
 	top = n*tan(theta_radian/2.0);
 	bott = -top;
 	right = top*aspect;
 	left = -right;
-        glFrustum(left,right, bott, top, n, f*3);
+        glFrustum(left,right, bott, top, n, f);
 }
 void CSWindow::paintGL()
 {
@@ -53,18 +57,30 @@ void CSWindow::draw()
 {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //re-orientating the camera to view scene
-    glRotatef(180,1.0,0.0,0.0);
-    glRotatef(180,0.0,1.0,0.0);
-    //roating based on mouse movements
-    glRotatef(rotY,1.0,0.0,0.0);
-    glRotatef(rotX,0.,1.0,0.0);
-    //translating initial camera position
-    glTranslatef(-500,-500,-1500);
-    //translating based on key movements
-    glTranslatef(CameraPosX,0,0);
-    glTranslatef(0,CameraPosY,0);
-    glTranslatef(0,0,CameraPosZ);
+    glColor3f(0,0,0);
+
+    if(lock)
+        gluLookAt(1450, 1000, 2500, 1450, 1000, 2499, 0, 1, 0);
+    else
+    {
+        //re-orientating the camera to view scene
+        glRotatef(180,1.0,0.0,0.0);
+        glRotatef(180,0.0,1.0,0.0);
+        //roating based on mouse movements
+        glRotatef(rotY,1.0,0.0,0.0);
+        glRotatef(rotX,0.,1.0,0.0);
+        //translating initial camera position
+        glTranslatef(-500,-500,-1500);
+        //translating based on key movements
+        glTranslatef(CameraPosX,0,0);
+        glTranslatef(0,CameraPosY,0);
+        glTranslatef(0,0,CameraPosZ);
+    }
+
+    /*glBegin(GL_POINTS);
+        glVertex3f(1450, 1000, 2500);
+        glVertex3f(1450, 1000, 0);
+    glEnd();*/
 
     glBegin(GL_LINES);
         glColor3f(1,0,0);
@@ -81,7 +97,7 @@ void CSWindow::draw()
      glEnd();
 
     if(num_taos > 0){
-         this->render();
+        this->render();
      }
 }
 
@@ -139,6 +155,12 @@ void CSWindow::keyPressEvent(QKeyEvent *event)
 }
 
 /***** Connected Buttons *****/
+
+void CSWindow::lockCamera()
+{
+    lock = !lock;
+    updateGL();
+}
 
 void CSWindow::showPatches()
 {
@@ -205,3 +227,4 @@ void CSWindow::render()
     //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     //paintGL();
 }
+

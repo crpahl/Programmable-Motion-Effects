@@ -15,13 +15,15 @@ private:
     void createMenus();
 
     // menu
+    QLabel *Label2;
     QLabel *Label;
     QMenuBar *menuBar;
     QMenu *fileMenu;
     QMenu *debugMenu;
 
     // button(s)
-    QRadioButton *patchesButton;
+    QCheckBox *lockCamera;
+    QCheckBox *patchesButton;
     QPushButton *openButton;
     QPushButton *debugButton;
 

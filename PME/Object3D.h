@@ -60,6 +60,7 @@ public:
 
 	void setPlane(int i, plane3D a);
 
+
 	//void objIntersect();
 	//plane3D planes[MAX_PLANE_AMOUNT];
 

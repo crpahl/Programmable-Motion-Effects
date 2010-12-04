@@ -8,10 +8,16 @@
 #include <gl/GLU.h>
 #include "Parser.h"
 #include "Object3D.h"
+#include <time.h>
+#include <math.h>
 #include <vector>
 
 #define MAX_OBJECTS 100
 #define MAX_BIPLANES 100
+
+#define FPS 25
+
+
 
 
 struct ray3D{
@@ -47,11 +53,11 @@ public:
 	
         void drawObjects();
 
+        Object3D getObject(int i);
 	void createBiPlanes();
         void drawBiPlanes();
 
 	int obj_amt;
-
 
 private:
         //Samples of the same object at different times

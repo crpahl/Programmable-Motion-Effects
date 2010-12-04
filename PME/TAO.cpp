@@ -4,6 +4,8 @@
 #include <vector>
 #include <iostream>
 
+#define INTERVAL 1
+
 bool biPlane3D::operator==(biPlane3D &b){
     if(( this->points[0] == b.points[0]  &&
          this->points[1] == b.points[1] )||
@@ -31,6 +33,9 @@ TAO::~TAO(void)
 {
 }
 
+Object3D TAO::getObject(int i){
+    return this->objects[i];
+}
 
 void TAO::initTAO()
 {
@@ -160,3 +165,4 @@ void TAO::drawObjects(){
 	}
 
 }
+

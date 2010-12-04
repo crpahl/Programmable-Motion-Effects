@@ -13,18 +13,23 @@ MainWindow::MainWindow(QWidget *parent): QDialog (parent)
 
     // Adding button(s)
     Label = new QLabel(tr("Patches"));
-    patchesButton = new QRadioButton();
+    Label2 = new QLabel(tr("Lock Camera"));
+    lockCamera = new QCheckBox();
+    patchesButton = new QCheckBox();
     openButton = new QPushButton(tr("open"));
     debugButton = new QPushButton(tr("debug"));
     connect(openButton, SIGNAL(clicked()), myWin, SLOT(open()));
     connect(debugButton, SIGNAL(clicked()), myWin, SLOT(debug()));
     connect(patchesButton, SIGNAL(clicked()), myWin, SLOT(showPatches()));
+    connect(lockCamera, SIGNAL(clicked()), myWin, SLOT(lockCamera()));
 
     QHBoxLayout *bLayout = new QHBoxLayout;
     bLayout->addWidget(openButton);
     bLayout->addStretch();
     bLayout->addWidget(Label);
     bLayout->addWidget(patchesButton);
+    bLayout->addWidget(Label2);
+    bLayout->addWidget(lockCamera);
     //bLayout->addWidget(debugButton);
     layout->addLayout(bLayout);
 

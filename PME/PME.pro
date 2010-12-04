@@ -13,7 +13,8 @@ HEADERS += \
     TAO.h \
     Object3D.h \
     Vector.h \
-    bilinear.h
+    bilinear.h \
+    camera.h
 
 SOURCES += \
     Parser.cpp \
@@ -23,4 +24,5 @@ SOURCES += \
     TAO.cpp \
     Object3D.cpp \
     Vector.cc \
-    bilinear.cc
+    bilinear.cc \
+    camera.cpp

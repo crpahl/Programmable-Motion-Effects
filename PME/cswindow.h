@@ -24,6 +24,7 @@ public slots:
         void open();
         void debug();
         void showPatches();
+        void lockCamera();
 protected:
 	void initializeGL();
 	void resizeGL(int width, int height);
@@ -37,7 +38,11 @@ private:
         void createTAOs();
         void render();
 
+        //void animateObjects(TAO tao, int ind);
+        //void animate(TAO tao);
+
         bool displayPatches;
+        bool lock;
         Parser *p;
 	QPoint lastPos;
 	GLfloat rotX;
