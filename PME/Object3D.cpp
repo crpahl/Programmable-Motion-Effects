@@ -139,12 +139,16 @@ void Object3D::drawObject(){
          glFlush();
          glPopMatrix();*/
 
-
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glColorPointer(4, GL_FLOAT,0,this->obj_colors);
 	glVertexPointer(3, GL_FLOAT,0,this->obj_verts);
-        glDrawArrays(GL_QUADS,0,this->total_verts);
+
+        if(this->total_planes > 1)
+            glDrawArrays(GL_QUADS,0,this->total_verts);
+        else
+            glDrawArrays(GL_POLYGON,0,this->total_verts);
+
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 

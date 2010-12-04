@@ -12,14 +12,20 @@ MainWindow::MainWindow(QWidget *parent): QDialog (parent)
     //layout->addWidget(menuBar);
 
     // Adding button(s)
+    Label = new QLabel(tr("Patches"));
+    patchesButton = new QRadioButton();
     openButton = new QPushButton(tr("open"));
     debugButton = new QPushButton(tr("debug"));
     connect(openButton, SIGNAL(clicked()), myWin, SLOT(open()));
     connect(debugButton, SIGNAL(clicked()), myWin, SLOT(debug()));
+    connect(patchesButton, SIGNAL(clicked()), myWin, SLOT(showPatches()));
+
     QHBoxLayout *bLayout = new QHBoxLayout;
-    bLayout->addWidget(debugButton);
-    bLayout->addStretch();
     bLayout->addWidget(openButton);
+    bLayout->addStretch();
+    bLayout->addWidget(Label);
+    bLayout->addWidget(patchesButton);
+    //bLayout->addWidget(debugButton);
     layout->addLayout(bLayout);
 
     _title="Programmable Motion Effects";

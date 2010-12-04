@@ -2,7 +2,9 @@ QT += opengl
 TEMPLATE = app
 TARGET = PME
 OTHER_FILES += \
-    input_test.txt
+    input_test.txt \
+    input_octagon.txt \
+    input_cube.txt
 
 HEADERS += \
     Parser.h \

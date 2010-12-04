@@ -15,11 +15,13 @@ private:
     void createMenus();
 
     // menu
+    QLabel *Label;
     QMenuBar *menuBar;
     QMenu *fileMenu;
     QMenu *debugMenu;
 
     // button(s)
+    QRadioButton *patchesButton;
     QPushButton *openButton;
     QPushButton *debugButton;
 

@@ -1,0 +1,22 @@
+define
+
+color 1 0 0 1
+name octagon
+
+plane
+0 0 200
+0 0 400
+0 200 600
+0 400 600
+0 600 400
+0 600 200
+0 400 0
+0 200 0
+done 
+
+done 
+
+
+translate octagon 5.5 600 0   0
+translate octagon 10  800 200 500
+translate octagon 10  800 600 500

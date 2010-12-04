@@ -4,6 +4,7 @@
 #include <sstream>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <QDebug>
 
 Parser::Parser(char *file)
@@ -77,6 +78,28 @@ int Parser::parse(void)
 				}
 				else if(!word.compare("rotate"))
 				{
+                                    /*Sample samp;
+                                    vector<Sample> samples;
+
+                                    int index = findSample(samp, samples, wordVec.at(1));
+                                    if(index >= 0)
+                                    {
+                                            Sample transSample = samp;
+                                            int angle = (float)atof(wordVec.at(3).c_str());
+
+                                            for(unsigned int i = 0; i < transSample.nPlanes; i++)
+                                            {
+                                                if(!wordVec.at(2).compare("z"))
+                                                    for(unsigned j = 0; j < transSample.planes[i].nPoints; j++)
+                                                    {
+                                                            transSample.planes[i].points[j].x = cos(angle) - sin(angle);
+                                                            transSample.planes[i].points[j].y = sin(angle) + cos(angle);
+                                                    }
+                                            }
+
+                                            transSample.time = (float)atof(wordVec.at(2).c_str());
+                                            objects.at(index).samples.push_back(transSample);
+                                    }*/
 				}
 			}
 		}

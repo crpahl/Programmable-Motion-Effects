@@ -16,13 +16,14 @@ class CSWindow : public QGLWidget
 public: 
 	CSWindow(QWidget *parent =0);
 
-        float CameraPos;				// Camera Distance to Origin
+        float CameraPosX, CameraPosY, CameraPosZ;	// Camera Distance to Origin
         float CameraRot[4];				// Camera Rotation
 signals:
 	void setSlider(int r);
 public slots:
         void open();
         void debug();
+        void showPatches();
 protected:
 	void initializeGL();
 	void resizeGL(int width, int height);
@@ -36,6 +37,7 @@ private:
         void createTAOs();
         void render();
 
+        bool displayPatches;
         Parser *p;
 	QPoint lastPos;
 	GLfloat rotX;

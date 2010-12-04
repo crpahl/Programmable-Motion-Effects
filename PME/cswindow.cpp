@@ -10,8 +10,10 @@ CSWindow::CSWindow(QWidget *parent) : QGLWidget(parent)
 {
 	setFormat(QGLFormat(QGL::DoubleBuffer|QGL::DepthBuffer));
         setGeometry(100,100,800,500);
+        setFocusPolicy(Qt::StrongFocus);
         rotX = -145;
         rotY = -215;
+        displayPatches = false;
         p = NULL;
 }
 void CSWindow::initializeGL()
@@ -44,13 +46,6 @@ void CSWindow::paintGL()
 {
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-
-        /*glLoadIdentity();
-
-        glTranslatef(0,0,CameraPos);
-        glRotatef(CameraRot[0],1,0,0);
-        glRotatef(CameraRot[1],0,1,0);*/
-
 	draw();
 }
 
@@ -58,13 +53,18 @@ void CSWindow::draw()
 {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
-    glTranslatef(0.0,0.0,-850.0);
-    glRotatef(180, 1, 0, 0);
-    glRotatef(rotX,1.0,0.0,0.0);
-    glRotatef(rotY,0.,1.0,0.0);
-    glTranslatef(-600,-300,0);
-
+    //re-orientating the camera to view scene
+    glRotatef(180,1.0,0.0,0.0);
+    glRotatef(180,0.0,1.0,0.0);
+    //roating based on mouse movements
+    glRotatef(rotY,1.0,0.0,0.0);
+    glRotatef(rotX,0.,1.0,0.0);
+    //translating initial camera position
+    glTranslatef(-500,-500,-1500);
+    //translating based on key movements
+    glTranslatef(CameraPosX,0,0);
+    glTranslatef(0,CameraPosY,0);
+    glTranslatef(0,0,CameraPosZ);
 
     glBegin(GL_LINES);
         glColor3f(1,0,0);
@@ -79,15 +79,6 @@ void CSWindow::draw()
         glVertex3f(0,0,0);
         glVertex3f(0,0,10000);
      glEnd();
-
-
-     /*glColor3f(1.0,1.0,0);
-     glBegin(GL_POLYGON);
-             glVertex3f(0,0,0);
-             glVertex3f(5,10,0);
-             glVertex3f(10,0,0);
-      glEnd();
-      glFlush();*/
 
     if(num_taos > 0){
          this->render();
@@ -117,37 +108,43 @@ void CSWindow::mouseMoveEvent(QMouseEvent *event)
 
 void CSWindow::keyPressEvent(QKeyEvent *event)
 {
-    int dr= 5;
-    float dx = .5f;
+    float dx= 20;
+
     switch(event->key()){
-    case 16777234:			//left
-        CameraRot[1] -= dr;
-        break;
-    case 16777236:
-        CameraRot[1] += dr;
-        break;
-    case 16777235:
-        CameraRot[0] += dr;
-        break;
-    case 16777237:
-        CameraRot[0] -= dr;
-        break;
-    case 16777238:			//page up
-        CameraPos += dx;
-        break;
-    case 16777239:			//page down
-        CameraPos -= dx;
-        break;
-    case 16777216:
-    case 27:
-        exit(0);
-        break;
+        case 16777234:			//left
+            CameraPosX -= dx;
+            break;
+        case 16777236:                  //right
+            CameraPosX += dx;
+            break;
+        case 16777235:			//up key
+            CameraPosZ -= dx;
+            break;
+        case 16777237:			//down key
+            CameraPosZ += dx;
+            break;
+        case 16777238:                  //page up
+            CameraPosY -= dx;
+            break;
+        case 16777239:                  //page down
+            CameraPosY += dx;
+            break;
+        case 16777216:
+        case 27:
+            exit(0);
+            break;
     }
     printf("key %d\n" , event->key());
     updateGL();
 }
 
 /***** Connected Buttons *****/
+
+void CSWindow::showPatches()
+{
+    displayPatches = !displayPatches;
+    updateGL();
+}
 
 void CSWindow::open()
 {
@@ -165,7 +162,7 @@ void CSWindow::open()
         if((*p).parse())
         {
             createTAOs();
-            //render();
+            updateGL();
         }
     }
 }
@@ -202,8 +199,8 @@ void CSWindow::render()
     for(int i = 0; i < num_taos; i++)
     {
         taos[i].drawObjects();
-        taos[i].drawBiPlanes();
-
+        if(displayPatches)
+            taos[i].drawBiPlanes();
     }
     //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     //paintGL();
