@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <time.h>
+#include "Ray.h"
 #include "Vector.h"
 
 // The screen resolution is defined as type screen_res_t
@@ -16,15 +17,17 @@ struct ONB{
     Vector u, v, w;
 };
 
-struct Ray{
-    Vector o; // origin of the ray
+/*struct Ray{
+    //Vector o; // origin of the ray
+    Vector o;
     Vector d; // direction of travel - should be normalized
     //Vector getPosition(const float &k);// get the coordinates with a value of k (the parameter value)
     //float distance(const Vector &point);// get the distance of the point from the origin of the ray
-};
+};*/
 
 class Camera {
 public:
+    Ray ray2;
     Vector eye,		// eye is the location of the camera
     up,			// up is the up vector
     gaze;			// gaze is the direction of the camera
@@ -46,6 +49,7 @@ public:
             float ruX,  float ruY,
             float llX,  float llY,
             screen_res_t X,  screen_res_t Y);
+
     Ray getRayThroughPixel( screen_res_t x, screen_res_t y);// create a ray through a pixel at (x,y)
     void createONB(const Vector &a , const Vector &b);    // create an Orthonormal Basis system from a and b
     Vector fromCameraToWorld(Vector &pos);				  // given the location the camera coordinate system, return the coordinates

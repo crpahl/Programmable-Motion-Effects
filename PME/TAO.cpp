@@ -88,7 +88,7 @@ void TAO::createBiPlanes(){
     //Get the initital samples
     for(int i = 0; i < this->obj_amt - 1; i++){
         // this->objects[i]; this will be the initital object
-        int temp = this->objects[i].getTotal_Planes();
+        //int temp = this->objects[i].getTotal_Planes();
         for(int l = 0; l < this->objects[i].getTotal_Planes(); l ++){
             totalPlanepts = this->objects[i].getPlane(l).amt_verts;
             for(int r = 0; r < totalPlanepts ; r++){

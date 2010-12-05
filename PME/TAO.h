@@ -19,15 +19,6 @@
 
 
 
-
-struct ray3D{
-    point3D origin;
-    //Direction should be normalized
-    point3D direction;
-    float distance;
-
-};
-
 struct biPlane3D{
         float time1,time2;
         point3D points[4];
@@ -58,13 +49,14 @@ public:
         void drawBiPlanes();
 
 	int obj_amt;
+        int biPlanes_amt; //amount of biPlanes!
+        biPlane3D bi_planes[MAX_BIPLANES];
 
 private:
         //Samples of the same object at different times
         Object3D objects[MAX_OBJECTS];
 
-        int biPlanes_amt; //amount of biPlanes!
-        biPlane3D bi_planes[MAX_BIPLANES];
+        //biPlane3D bi_planes[MAX_BIPLANES];
 	vector<Sample> samps;
         //Object we get from the parser, contains all the samples
         Object obj;

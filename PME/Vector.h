@@ -115,6 +115,7 @@ inline Vector& Vector::operator=(const Vector& v) {
     d[1]=v.d[1];
     d[2]=v.d[2];
     return *this;
+    //return this;
 }
 
 

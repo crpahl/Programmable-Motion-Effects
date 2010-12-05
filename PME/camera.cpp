@@ -3,6 +3,11 @@ Author: Herb Yang, March 9, 2010 - modified based on a version by Daniel Neilson
 */
 
 #include "camera.h"
+#include <string.h>
+#include <iostream>
+#include "Ray.h"
+
+bool first;
 
 Camera::Camera(){}
 
@@ -35,6 +40,8 @@ int Camera::initCamera(
         float _ruX,  float _ruY,
         float _llX,  float _llY,
         screen_res_t _X,  screen_res_t _Y) {
+    first = true;
+
     eye = _eye;
     up = _up;
     gaze = _gaze;
@@ -52,51 +59,74 @@ int Camera::initCamera(
 // Create and return a ray through the desired pixel - the ray direction is normalized. The origin of the
 // ray is at the center of the camera or the eye location
 Ray Camera::getRayThroughPixel( screen_res_t x, screen_res_t y)  {
-    Ray ray;		// the ray we're returning
-    Vector pos;	// the pixel location in UVW coordinate
+    Vector pos;
+    Ray ray;
     ray.o = eye;
-    /*int tempx, tempy;
-    float tempfx, tempfy;
-    tempx = (int) rand();
-    tempfx = float(tempx %RANGE);
-    tempy = (int) rand();
 
-    tempfy = float(tempy % RANGE);// temp x and temp y are in the range of 0 to RANGE
+   // pos.x(au + (bu -au)*(x+0.5f)/(Nx-1));
+   // pos.y(av + (bv -av)*(y+0.5f)/(Ny-1));
 
-    tempfx = tempfx/RANGE;
-    tempfy = tempfy/RANGE;*/
-
-    //pos.x(au + (bu -au)*(x+tempfx)/(Nx-1));
-    //pos.y(av + (bv -av)*(y+tempfy)/(Ny-1));
-    pos.x(au + (bu -au)*(x+0.5f)/(Nx-1));
-    pos.y(av + (bv -av)*(y+0.5f)/(Ny-1));
+    pos.x(au + ( ((bu-au)/(Nx-1) )*(x+0.5f) ));
+    pos.y(av + ( ((bv-av)/(Ny-1) )*(y+0.5f) ));
     pos.z(-s);
 
     // Convert the uvw coordinates into xyz coordinates, and place the result
     // in the ray
     ray.d = fromCameraToWorld(pos);
-    ray.d  = ray.d - ray.o;
+    ray.d = ray.d - ray.o;
+    //ray.d -= ray.o;
+
+    if(x == 0 && y == 0)
+    {
+        std::cerr << ray.d.x()*100000 << " " << ray.d.y()*100000 << " " << ray.d.z()*100000 << std::endl;
+        std::cerr << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
+    }
+    if(x == 500 && y == 400)
+    {
+        std::cerr << ray.d.x()*100000 << " " << ray.d.y()*100000 << " " << ray.d.z()*100000 << std::endl;
+        std::cerr << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
+    }
+
     ray.d.normalize();
+
+    std::cout << ray.d.x()*1000 << " " << ray.d.y()*1000 << " " << ray.d.z()*1000 << std::endl;
+
     return ray;
 } // getRayThroughPixel
 void Camera::createONB(const Vector& a, const Vector& b)
 {
     //following the steps layed out in the slides to get an orthonormal basis
-    basis.w = Vector(0,0,0) - a;
+    //basis.w = Vector(0,0,0) - a;
+    basis.w = -a;
     basis.w.normalize();
     basis.u = b.cross(basis.w);
     basis.u.normalize();
     basis.v = basis.w.cross(basis.u);
+
+    std::cout << "BASIS: " << std::endl;
+    std::cout << basis.w.dot(basis.u) << " " << (int)basis.w.dot(basis.v) << std::endl;
+    std::cout << basis.v.dot(basis.u) << std::endl;
+    std::cout << "BASIS: ";
 }
 // transform from the camera coordinate system to the world coordinate system
-Vector Camera::fromCameraToWorld(Vector & p)
+Vector Camera::fromCameraToWorld(Vector &p)
 {
     //following the steps in the slides to transform from the camera to the world coordinate system
-    Vector transform = Vector();
+    Vector transform;
 
-    transform.x(p.x() * basis.u.x() + p.y() *basis.v.x() + p.z() *basis.w.x());
-    transform.y(p.x() * basis.u.y() + p.y() *basis.v.y() + p.z() *basis.w.y());
-    transform.z(p.x() * basis.u.z() + p.y() *basis.v.z() + p.z() *basis.w.z());
+    transform.x( p.x() * basis.u.x() + p.y() *basis.v.x() + p.z() *(int)basis.w.x() );
+    transform.y( p.x() * basis.u.y() + p.y() *basis.v.y() + p.z() *(int)basis.w.y() );
+    transform.z( p.x() * basis.u.z() + p.y() *basis.v.z() + p.z() *(int)basis.w.z() );
+
+    //transform.x = p.x*basis.u.x + p.y*basis.v.x + p.z*basis.w.x;
+    //transform.y = p.x*basis.u.y + p.y*basis.v.y + p.z*basis.w.y;
+    //transform.z = p.x*basis.u.z + p.y*basis.v.z + p.z*basis.w.z;
+
+    //if(first)
+    //{
+        //std::cout << "BLARG" << transform.x()*1000 << " " << transform.y()*1000 << " " << transform.z()*1000 << std::endl;
+        //first = false;
+    //}
 
     return transform;
 }

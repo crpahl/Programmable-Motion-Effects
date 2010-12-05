@@ -1,5 +1,6 @@
 QT += opengl
 TEMPLATE = app
+CONFIG += console
 TARGET = PME
 OTHER_FILES += \
     input_test.txt \
@@ -14,7 +15,8 @@ HEADERS += \
     Object3D.h \
     Vector.h \
     bilinear.h \
-    camera.h
+    camera.h \
+    Ray.h
 
 SOURCES += \
     Parser.cpp \
@@ -25,4 +27,5 @@ SOURCES += \
     Object3D.cpp \
     Vector.cc \
     bilinear.cc \
-    camera.cpp
+    camera.cpp \
+    Ray.cpp

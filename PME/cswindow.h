@@ -5,7 +5,9 @@
 #include <cstdlib> 
 #include <ctime> 
 #include "TAO.h"
+#include "bilinear.h"
 #include <vector>
+#include "camera.h"
 #include "Parser.h"
 #define PI 3.14159
 using namespace std;
@@ -37,10 +39,16 @@ private:
         void draw();
         void createTAOs();
         void render();
+        void trace();
+        void setPixel(int x, int y, Color c);
 
         //void animateObjects(TAO tao, int ind);
         //void animate(TAO tao);
 
+        Ray testRay;
+
+        Vector *gaze, *up, *eye;
+        Camera cam;                 //The camera that generates rays
         bool displayPatches;
         bool lock;
         Parser *p;

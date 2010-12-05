@@ -4,18 +4,24 @@
 #include <iostream>
 
 TAO taos[10];
+bool pixels[600*500];
 int num_taos;
 
 CSWindow::CSWindow(QWidget *parent) : QGLWidget(parent)
 {
 	setFormat(QGLFormat(QGL::DoubleBuffer|QGL::DepthBuffer));
-        setGeometry(100,100,800,500);
+        setGeometry(100,100,600,500);
         setFocusPolicy(Qt::StrongFocus);
         rotX = -145;
         rotY = -215;
         displayPatches = false;
         lock = false;
         p = NULL;
+
+        //setting the up and gaze vectors of the camera
+        gaze = new Vector(1450.0, 1000.0, 2500.0);
+        up = new Vector(0.0,1.0,0.0);
+        eye = new Vector(1450.0, 1000.0, 2501.0);
 }
 void CSWindow::initializeGL()
 {
@@ -47,7 +53,10 @@ void CSWindow::resizeGL(int width, int height)
 	left = -right;
 
         glFrustum(left,right, bott, top, n, f);
+
+        cam.initCamera(*up, *gaze, *eye, n, top, right, bott, left, width, height);
 }
+
 void CSWindow::paintGL()
 {
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -62,7 +71,7 @@ void CSWindow::draw()
     glColor3f(0,0,0);
 
     if(lock)
-        gluLookAt(1450, 1000, 2500, 1450, 1000, 2499, 0, 1, 0);
+        gluLookAt(1450, 1000, 2501, 1450, 1000, 2500, 0, 1, 0);
     else
     {
         //re-orientating the camera to view scene
@@ -79,11 +88,6 @@ void CSWindow::draw()
         glTranslatef(0,0,CameraPosZ);
     }
 
-    /*glBegin(GL_POINTS);
-        glVertex3f(1450, 1000, 2500);
-        glVertex3f(1450, 1000, 0);
-    glEnd();*/
-
     glBegin(GL_LINES);
         glColor3f(1,0,0);
         glVertex3f(0,0,0);
@@ -96,10 +100,42 @@ void CSWindow::draw()
         glColor3f(0,0,1);
         glVertex3f(0,0,0);
         glVertex3f(0,0,10000);
+
+
      glEnd();
 
-    if(num_taos > 0){
-        this->render();
+    if(num_taos > 0)
+     {
+        //this->render();
+        ////////////////////////////////////AHHHHHHHHHHHHHHHHH//////////////////////////
+
+        glColor3f(0,0,0);
+        glBegin(GL_LINES);
+            glVertex3f(testRay.o.x(),testRay.o.y(),testRay.o.z() );
+            glVertex3f(testRay.d.x()*5000,testRay.d.y()*5000,testRay.d.z()*5000);
+        glEnd();
+
+        //glPointSize(2.0);
+        glBegin(GL_POINTS);
+        int count, count2;
+        count = count2 = 0;
+        for(int n = 0; n < cam.Ny; n++)
+            for(int m = 0; m < cam.Nx; m++){
+                if(pixels[n*cam.Nx+m]){
+                    glColor3f(1.0,0,0);
+                    glVertex2i(m,n);
+                    count++;
+                }
+                else{
+                    glColor3f(0,1,0);
+                    glVertex2i(m,n);
+                    count2++;
+                }
+        }
+        cout << "count: " << count << "count2: " << count2 << endl;
+        glEnd();
+        glFlush();
+
      }
 }
 
@@ -186,6 +222,7 @@ void CSWindow::open()
         if((*p).parse())
         {
             createTAOs();
+            trace();
             updateGL();
         }
     }
@@ -199,6 +236,94 @@ void CSWindow::debug()
 
 
 /***** Helper Methods *****/
+
+void CSWindow::trace()
+{
+    Vector p00,p01,p10,p11,r,d,srt;
+    screen_res_t currX, currY;
+    screen_res_t x, y;
+    Ray currRay;
+
+    x = cam.Nx;
+    y = cam.Ny;
+
+    int count = 0;
+    int count2 = 0;
+
+    for (currY = 0; currY < y; currY++)
+    {
+        for (currX = 0; currX < x; currX++)
+        {
+            currRay = cam.getRayThroughPixel(currX, currY);
+
+            if(currX == 0 && currY == 0)
+                currRay = cam.getRayThroughPixel(currX, currY);
+            if(currX == 400 && currY == 400)
+                currRay = cam.getRayThroughPixel(currX, currY);
+
+
+            if(currX*currY == 100000)
+            {
+                testRay = currRay;
+            }
+
+            for(int i=0; i < num_taos; i++)
+            {
+                for(int k =0; k < taos[i].biPlanes_amt; k++)
+                {
+                        p00.x(taos[i].bi_planes[k].points[0].x);
+                        p00.y(taos[i].bi_planes[k].points[0].y);
+                        p00.z(taos[i].bi_planes[k].points[0].z);
+
+                        p01.x(taos[i].bi_planes[k].points[1].x);
+                        p01.y(taos[i].bi_planes[k].points[1].y);
+                        p01.z(taos[i].bi_planes[k].points[1].z);
+
+                        p10.x(taos[i].bi_planes[k].points[2].x);
+                        p10.y(taos[i].bi_planes[k].points[2].y);
+                        p10.z(taos[i].bi_planes[k].points[2].z);
+
+                        p11.x(taos[i].bi_planes[k].points[3].x);
+                        p11.y(taos[i].bi_planes[k].points[3].y);
+                        p11.z(taos[i].bi_planes[k].points[3].z);
+
+                        r.x(currRay.o.x()); r.y(currRay.o.y()); r.z(currRay.o.z());
+                        d.x(currRay.d.x()); d.y(currRay.d.y()); d.z(currRay.d.z());
+
+                        BilinearPatch dp(p00,p01,p10,p11);
+
+                        if(dp.RayPatchIntersection(r,d,srt))
+                        {
+                            pixels[currY * x + currX] = true;
+                            count2++;
+                            break;
+                        }
+                        else
+                        {
+                            pixels[currY * x + currX] = false;
+                            count++;
+                        }
+                }
+            }
+
+
+        }
+    }
+
+    //std::cerr << "count: " << count << "count2: " << count2 << endl;
+}
+
+// set the colour of the raw image at location x, y with colour c
+//
+void CSWindow::setPixel(int x, int y, Color c)
+{
+    /*int i;
+    Color *p;
+    p = rawImage;
+    i = y*theCamera.Nx+x;
+
+    p[i] = c;*/
+}
 
 void CSWindow::createTAOs()
 {
