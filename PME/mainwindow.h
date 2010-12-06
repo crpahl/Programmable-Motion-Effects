@@ -15,7 +15,9 @@ private:
     void createMenus();
 
     // label
+    QLabel *speedLines;
     QLabel *outputLabel;
+    QLabel *blurLabel;
     QLabel *Label3;
     QLabel *Label2;
     QLabel *Label;
@@ -30,8 +32,12 @@ private:
     QCheckBox *lockCamera;
     QCheckBox *patchesButton;
     QCheckBox *outputButton;
+    QRadioButton *speedButton;
+    QRadioButton *blurButton;
+    QPushButton *switchButton;
     QPushButton *openButton;
     QPushButton *debugButton;
+    QPushButton *animateButton;
 
     CSWindow *myWin;
     CSWindow *renWin;

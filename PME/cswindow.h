@@ -16,8 +16,10 @@ using namespace std;
 struct Trace{
     //Vector srt;
     float time;
+    float t;
     color3D color;
     float x, y;
+    //float tsleft, tsright;
 };
 
 class CSWindow : public QGLWidget
@@ -37,6 +39,7 @@ public slots:
         void lockCamera();
         void setGrid();
         void displayOutput();
+        void animate();
 protected:
 	void initializeGL();
 	void resizeGL(int width, int height);
@@ -50,6 +53,15 @@ private:
         void createTAOs();
         void render();
         void trace();
+
+        //Different motion effects
+        float alphaGen(float tn, float tf, float alpha);
+        void motionBlur(float t, float f_time);
+        void speedLines(Vector seed, float w, float l, float f_time);
+        void stroboImage(float spacing, float length, float f_time);
+
+
+        //Get rid of this useless method
         void setPixel(int x, int y, Color c);
 
         //void animateObjects(TAO tao, int ind);
@@ -66,6 +78,7 @@ private:
         bool output;
 
         int w, h;
+        float time;
 
         Parser *p;
 	QPoint lastPos;

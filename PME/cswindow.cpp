@@ -5,6 +5,7 @@
 
 #define RESX 600
 #define RESY 600
+#define INF 999999999
 
 TAO taos[10];
 //bool pixels[RESX*RESY];
@@ -96,41 +97,25 @@ void CSWindow::draw()
         {
 
                 glMatrixMode(GL_PROJECTION);
-
-
                 glLoadIdentity();
                 gluOrtho2D(0.0, (GLfloat)w, 0.0, (GLfloat)h);
+                //glEnable(GL_POINT_SMOOTH);
                 glDisable(GL_DEPTH_TEST);
                 glMatrixMode(GL_MODELVIEW);
                 glLoadIdentity();
-                //////TESTING THIS///////////////////////////////
+
                 if(num_taos > 0)
                 {
-
-                    glPointSize(1.0);
-                    glBegin(GL_POINTS);
-                    int count, count2;
-                    count = count2 = 0;
-                    for(int n = 0; n < cam.Ny; n++)
-                        for(int m = 0; m < cam.Nx; m++){
-
-                        if(!pixelz[n*cam.Nx+m].empty()){
-                            Trace frag = pixelz[n*cam.Nx+m].at(0);
-                            glColor4f(frag.color.r,frag.color.g,frag.color.b, frag.color.a);
-                            glVertex2i(m,n);
-
-
-                        }
-                        else
-                        {
-                            glColor3f(1,1,1);
-                            glVertex2i(m,n);
-                        }
-                    }
-                    glEnd();
-                    glFlush();
+                    Vector seed(.1,.95,0);
+                    /*//this->stroboImage(4,2,20);
+                    */
+                        this->motionBlur(1,time);
+                        //this->speedLines(seed,4,4,time);
+                        //glClear(GL_COLOR_BUFFER_BIT);
+                        //updateGL();
+                    //}
+                    //int blarg = 5;
                 }
-                /////TESTING THIS /////////////////////////
                 else
                 {
                     int i,j,c;
@@ -228,53 +213,13 @@ void CSWindow::draw()
 
 
             if(num_taos > 0)
-             {
+            {
                 this->render();   //Uncomment to render scene
-
-                /*glColor3f(0,0,0);
-                glBegin(GL_LINES);
-                    glVertex3f(testRay.o.x(),testRay.o.y(),testRay.o.z() );
-                    glVertex3f(testRay.o.x()+testRay.d.x()*5000,testRay.o.y()+testRay.d.y()*5000,testRay.o.x()+testRay.d.z()*5000);
-                glEnd();
-
-                //glPointSize(1.0);
-                glBegin(GL_POINTS);
-                int count, count2;
-                count = count2 = 0;
-                for(int n = 0; n < cam.Ny; n++)
-                    for(int m = 0; m < cam.Nx; m++){
-
-                    if(!pixelz[n*cam.Nx+m].empty()){
-                            Trace frag = pixelz[n*cam.Nx+m].at(0);
-                            if(frag.time < 10)
-                            {
-                                if(frag.y < 0.1 || frag.y > 0.9)
-                                {
-                                  glColor4f(frag.color.r,frag.color.g,frag.color.b, frag.color.a);
-                                  glVertex2i(m,n);
-                                }
-                            }
-                            else
-                            {
-                                glColor3f(0,1,0);
-                                glVertex2i(m,n);
-                            }
-                    }
-                    else
-                    {
-                        glColor3f(0,1,0);
-                        glVertex2i(m,n);
-                    }
-                }
-                glEnd();
-                glFlush();*/   ///END
-            ///AHHHHHHHHHHHHHH
-            }////AHHHHHHHHHHHHHHHHHHHHH
-
+            }
             break;
         }
         default:
-        break;
+            break;
     }
 
 
@@ -329,7 +274,7 @@ void CSWindow::keyPressEvent(QKeyEvent *event)
             exit(0);
             break;
     }
-    printf("key %d\n" , event->key());
+    //printf("key %d\n" , event->key());
     updateGL();
 }
 
@@ -337,6 +282,7 @@ void CSWindow::keyPressEvent(QKeyEvent *event)
 
 void CSWindow::trace()
 {
+    std::cout << "Begin trace..." << std::endl;
     Vector p00,p01,p10,p11,r,d,srt;
     color3D color1, color2, color;
     Trace fragment;
@@ -413,6 +359,7 @@ void CSWindow::trace()
                             fragment.time = time;
                             fragment.x = (float)srt.x();
                             fragment.y = (float)srt.y();
+                            fragment.t = (float)srt.z();
 
                             pixelz[currY * x + currX].push_back(fragment);
                         }
@@ -422,6 +369,7 @@ void CSWindow::trace()
 
         }
     }
+    std::cout << "End trace!" << std::endl;
 }
 
 // set the colour of the raw image at location x, y with colour c
@@ -461,6 +409,168 @@ void CSWindow::render()
     }
 }
 
+/***** Motion Effects *****/
+float CSWindow::alphaGen(float tn, float tf, float alpha){
+    float a = tn/tf;
+    float ret = (a*alpha);
+    return ret;
+}
+
+void CSWindow::motionBlur(float t, float f_time){
+//ensure t is between 0 and 1
+    Trace frag, temp_frag;
+    glBegin(GL_POINTS);
+    float min_scalar;
+
+    for(int n = 0; n < cam.Ny; n++)
+        for(int m = 0; m < cam.Nx; m++){
+
+        if(!pixelz[n*cam.Nx+m].empty())
+        {
+            min_scalar = INF;
+
+            for(unsigned int j = 0; j < pixelz[n*cam.Nx+m].size(); j++)
+            {
+                temp_frag = pixelz[n*cam.Nx+m].at(j);
+                if(temp_frag.t < min_scalar)
+                {
+                    frag = temp_frag;
+                    min_scalar = temp_frag.t;
+                }
+            }
+
+            if(frag.time <= f_time)
+            {
+                glColor4f(frag.color.r,frag.color.g,frag.color.b,
+                           alphaGen(frag.time,f_time,frag.color.a) );
+                glVertex2i(m,n);
+            }
+            else
+            {
+                glColor3f(1,1,1);
+                glVertex2i(m,n);
+            }
+        }
+        else
+        {
+            glColor3f(1,1,1);
+            glVertex2i(m,n);
+        }
+    }
+    glEnd();
+    glFlush();
+}
+void CSWindow::speedLines(Vector seed, float w, float l, float f_time){
+    Trace frag;
+    glBegin(GL_POINTS);
+
+    for(int n = 0; n < cam.Ny; n++)
+        for(int m = 0; m < cam.Nx; m++){
+
+        if(!pixelz[n*cam.Nx+m].empty())
+        {
+            for(unsigned int j = 0; j < pixelz[n*cam.Nx+m].size(); j++)
+            {
+                frag = pixelz[n*cam.Nx+m].at(j);
+                if(frag.time <= f_time && (frag.y >= (float)seed.y() || frag.y <= 1 - (float)seed.y()))
+                {
+                    glColor4f(frag.color.r,frag.color.g,frag.color.b,
+                               alphaGen(frag.time,f_time,frag.color.a) );
+                    glVertex2i(m,n);
+                    break;
+                }
+                else
+                {
+                    glColor3f(1,1,1);
+                    glVertex2i(m,n);
+                }
+            }
+
+        }
+        else
+        {
+            glColor3f(1,1,1);
+            glVertex2i(m,n);
+        }
+    }
+    glEnd();
+    glFlush();
+
+
+
+
+}
+void CSWindow::stroboImage(float spacing, float length, float f_time){
+    float t1mod,t2mod;
+
+    glPointSize(1.0);
+    glBegin(GL_POINTS);
+    //glColor3f(1,1,1);
+
+    for(int n = 0; n < cam.Ny; n++)
+    {
+        for(int m = 0; m < cam.Nx; m++)
+        {
+            //glColor3f(1,1,1);
+            //glVertex2i(m,n);
+
+        //ensure pixel has seen something here
+        if(!pixelz[n*cam.Nx+m].empty())
+        {
+            for(int k =0; k < (int)pixelz[n*cam.Nx+m].size()-1; k++)
+            {
+
+                Trace frag = pixelz[n*cam.Nx+m].at(k);
+                //ensure it it within the timerane
+                if(frag.time <= f_time)
+                {
+                    //Trace frag2 = pixelz[n*cam.Nx+m].at((int) k+1 % pixelz[n*cam.Nx+m].size());
+                    Trace frag2 = pixelz[n*cam.Nx+m].at(k+1);
+
+                    if(frag.time < (f_time*25) - spacing)
+                    {
+                        //t1mod = (int)frag.time % (int)spacing;
+                        //t2mod = (int)frag2.time % (int)spacing;
+
+                        //if(t1mod <= 0 && t2mod < 0)
+                        //{
+                            //Set alpha a low constant
+                            //glColor4f(frag.color.r,frag.color.g,frag.color.b, 1);
+                            glColor3f(0,1,0);
+                            glVertex2i(m,n);
+                        //}
+                        /*else{
+                            glColor3f(0,0,1);//Blah
+                            glVertex2i(m,n);
+                        }*/
+                    }
+                    else{
+                        glColor3f(0,0,1);
+                        glVertex2i(m,n);
+                    }
+                }
+                else{
+                    glColor3f(1,0,1);
+                        glVertex2i(m,n);
+                    }
+            }
+
+        }
+
+        else
+        {
+            glColor3f(0,0,1);
+            glVertex2i(m,n);
+        }
+    }
+    }
+
+    glEnd();
+    glFlush();
+
+
+}
+
 /***** Connected Buttons *****/
 
 void CSWindow::displayOutput()
@@ -479,7 +589,7 @@ void CSWindow::displayOutput()
         glFrustum(-1,1,-1,1, n, f);
     }
 
-    updateGL();
+    //updateGL();
 }
 
 void CSWindow::setGrid()
@@ -498,6 +608,14 @@ void CSWindow::showPatches()
 {
     displayPatches = !displayPatches;
     updateGL();
+}
+
+void CSWindow::animate()
+{
+    for(time = 0; time < 20; time+=0.1)
+    {
+        updateGL();
+    }
 }
 
 void CSWindow::open()
