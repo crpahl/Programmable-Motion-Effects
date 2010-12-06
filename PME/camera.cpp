@@ -63,9 +63,6 @@ Ray Camera::getRayThroughPixel( screen_res_t x, screen_res_t y)  {
     Ray ray;
     ray.o = eye;
 
-   // pos.x(au + (bu -au)*(x+0.5f)/(Nx-1));
-   // pos.y(av + (bv -av)*(y+0.5f)/(Ny-1));
-
     pos.x(au + ( ((bu-au)/(Nx-1) )*(x+0.5f) ));
     pos.y(av + ( ((bv-av)/(Ny-1) )*(y+0.5f) ));
     pos.z(-s);
@@ -74,39 +71,19 @@ Ray Camera::getRayThroughPixel( screen_res_t x, screen_res_t y)  {
     // in the ray
     ray.d = fromCameraToWorld(pos);
     ray.d = ray.d - ray.o;
-    //ray.d -= ray.o;
-
-    if(x == 0 && y == 0)
-    {
-        std::cerr << ray.d.x()*100000 << " " << ray.d.y()*100000 << " " << ray.d.z()*100000 << std::endl;
-        std::cerr << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
-    }
-    if(x == 500 && y == 400)
-    {
-        std::cerr << ray.d.x()*100000 << " " << ray.d.y()*100000 << " " << ray.d.z()*100000 << std::endl;
-        std::cerr << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
-    }
 
     ray.d.normalize();
-
-    std::cout << ray.d.x()*1000 << " " << ray.d.y()*1000 << " " << ray.d.z()*1000 << std::endl;
 
     return ray;
 } // getRayThroughPixel
 void Camera::createONB(const Vector& a, const Vector& b)
 {
     //following the steps layed out in the slides to get an orthonormal basis
-    //basis.w = Vector(0,0,0) - a;
     basis.w = -a;
     basis.w.normalize();
     basis.u = b.cross(basis.w);
     basis.u.normalize();
     basis.v = basis.w.cross(basis.u);
-
-    std::cout << "BASIS: " << std::endl;
-    std::cout << basis.w.dot(basis.u) << " " << (int)basis.w.dot(basis.v) << std::endl;
-    std::cout << basis.v.dot(basis.u) << std::endl;
-    std::cout << "BASIS: ";
 }
 // transform from the camera coordinate system to the world coordinate system
 Vector Camera::fromCameraToWorld(Vector &p)
@@ -117,16 +94,6 @@ Vector Camera::fromCameraToWorld(Vector &p)
     transform.x( p.x() * basis.u.x() + p.y() *basis.v.x() + p.z() *(int)basis.w.x() );
     transform.y( p.x() * basis.u.y() + p.y() *basis.v.y() + p.z() *(int)basis.w.y() );
     transform.z( p.x() * basis.u.z() + p.y() *basis.v.z() + p.z() *(int)basis.w.z() );
-
-    //transform.x = p.x*basis.u.x + p.y*basis.v.x + p.z*basis.w.x;
-    //transform.y = p.x*basis.u.y + p.y*basis.v.y + p.z*basis.w.y;
-    //transform.z = p.x*basis.u.z + p.y*basis.v.z + p.z*basis.w.z;
-
-    //if(first)
-    //{
-        //std::cout << "BLARG" << transform.x()*1000 << " " << transform.y()*1000 << " " << transform.z()*1000 << std::endl;
-        //first = false;
-    //}
 
     return transform;
 }

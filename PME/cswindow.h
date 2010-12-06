@@ -9,8 +9,16 @@
 #include <vector>
 #include "camera.h"
 #include "Parser.h"
+#include "Object3D.h"
 #define PI 3.14159
 using namespace std;
+
+struct Trace{
+    //Vector srt;
+    float time;
+    color3D color;
+    float x, y;
+};
 
 class CSWindow : public QGLWidget
 {
@@ -27,6 +35,7 @@ public slots:
         void debug();
         void showPatches();
         void lockCamera();
+        void setGrid();
 protected:
 	void initializeGL();
 	void resizeGL(int width, int height);
@@ -51,6 +60,7 @@ private:
         Camera cam;                 //The camera that generates rays
         bool displayPatches;
         bool lock;
+        bool displayGrid;
         Parser *p;
 	QPoint lastPos;
 	GLfloat rotX;

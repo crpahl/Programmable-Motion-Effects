@@ -14,20 +14,26 @@ MainWindow::MainWindow(QWidget *parent): QDialog (parent)
     // Adding button(s)
     Label = new QLabel(tr("Patches"));
     Label2 = new QLabel(tr("Lock Camera"));
+    Label3 = new QLabel(tr("Grid"));
     lockCamera = new QCheckBox();
     patchesButton = new QCheckBox();
+    setGrid = new QCheckBox();
+    setGrid->click();
     openButton = new QPushButton(tr("open"));
     debugButton = new QPushButton(tr("debug"));
     connect(openButton, SIGNAL(clicked()), myWin, SLOT(open()));
     connect(debugButton, SIGNAL(clicked()), myWin, SLOT(debug()));
     connect(patchesButton, SIGNAL(clicked()), myWin, SLOT(showPatches()));
     connect(lockCamera, SIGNAL(clicked()), myWin, SLOT(lockCamera()));
+    connect(setGrid, SIGNAL(clicked()), myWin, SLOT(setGrid()));
 
     QHBoxLayout *bLayout = new QHBoxLayout;
     bLayout->addWidget(openButton);
     bLayout->addStretch();
     bLayout->addWidget(Label);
     bLayout->addWidget(patchesButton);
+    bLayout->addWidget(Label3);
+    bLayout->addWidget(setGrid);
     bLayout->addWidget(Label2);
     bLayout->addWidget(lockCamera);
     //bLayout->addWidget(debugButton);
