@@ -40,6 +40,8 @@ public slots:
         void setGrid();
         void displayOutput();
         void animate();
+        void speed();
+        void blur();
 protected:
 	void initializeGL();
 	void resizeGL(int width, int height);
@@ -55,7 +57,8 @@ private:
         void trace();
 
         //Different motion effects
-        float alphaGen(float tn, float tf, float alpha);
+        float alphaGen(float tn, float tf, float l, float alpha);
+        float brighten(float tn, float tf, float l, float c);
         void motionBlur(float t, float f_time);
         void speedLines(Vector seed, float w, float l, float f_time);
         void stroboImage(float spacing, float length, float f_time);
@@ -76,6 +79,9 @@ private:
         bool lock;
         bool displayGrid;
         bool output;
+        bool _animate;
+        bool _speed;
+        bool _blur;
 
         int w, h;
         float time;

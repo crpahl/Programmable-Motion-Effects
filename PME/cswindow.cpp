@@ -24,6 +24,9 @@ CSWindow::CSWindow(QWidget *parent) : QGLWidget(parent)
         displayGrid = true;
         lock = false;
         output = false;
+        _animate = false;
+        _speed = true;
+        _blur = false;
         p = NULL;
 
         //setting the up and gaze vectors of the camera
@@ -99,28 +102,25 @@ void CSWindow::draw()
                 glMatrixMode(GL_PROJECTION);
                 glLoadIdentity();
                 gluOrtho2D(0.0, (GLfloat)w, 0.0, (GLfloat)h);
-                //glEnable(GL_POINT_SMOOTH);
                 glDisable(GL_DEPTH_TEST);
+                //glEnable(GL_POINT_SMOOTH);
                 glMatrixMode(GL_MODELVIEW);
                 glLoadIdentity();
 
-                if(num_taos > 0)
+                if(num_taos > 0 && _animate)
                 {
-                    Vector seed(.1,.95,0);
-                    /*//this->stroboImage(4,2,20);
-                    */
-                        this->motionBlur(1,time);
-                        //this->speedLines(seed,4,4,time);
-                        //glClear(GL_COLOR_BUFFER_BIT);
-                        //updateGL();
-                    //}
-                    //int blarg = 5;
+                    if(_speed)
+                    {
+                        Vector seed(.1,.95,0);
+                        this->speedLines(seed,4,4,time);
+                    }
+                    else if(_blur)
+                        this->motionBlur(4,time);
                 }
                 else
                 {
                     int i,j,c;
                     GLubyte checkImage[h][w][3];
-
 
                     for(i=0; i <h; i++)
                         for(j =0; j < w; j++){
@@ -410,46 +410,53 @@ void CSWindow::render()
 }
 
 /***** Motion Effects *****/
-float CSWindow::alphaGen(float tn, float tf, float alpha){
-    float a = tn/tf;
-    float ret = (a*alpha);
-    return ret;
+float CSWindow::alphaGen(float tn, float tf, float l, float alpha)
+{
+    float a = (tf-tn)/l;
+
+    a = 1 - a;
+
+    return a/2;
 }
 
-void CSWindow::motionBlur(float t, float f_time){
+void CSWindow::motionBlur(float l, float f_time){
 //ensure t is between 0 and 1
-    Trace frag, temp_frag;
+
     glBegin(GL_POINTS);
-    float min_scalar;
+    //float min_scalar;
+    Trace frag, temp_frag;
 
     for(int n = 0; n < cam.Ny; n++)
         for(int m = 0; m < cam.Nx; m++){
 
         if(!pixelz[n*cam.Nx+m].empty())
         {
-            min_scalar = INF;
+            //min_scalar = INF;
 
             for(unsigned int j = 0; j < pixelz[n*cam.Nx+m].size(); j++)
             {
-                temp_frag = pixelz[n*cam.Nx+m].at(j);
+                /*temp_frag = pixelz[n*cam.Nx+m].at(j);
                 if(temp_frag.t < min_scalar)
                 {
                     frag = temp_frag;
                     min_scalar = temp_frag.t;
                 }
-            }
+            }*/
 
-            if(frag.time <= f_time)
+            frag = pixelz[n*cam.Nx+m].at(j);
+            if((f_time-frag.time < l) &&  (f_time-frag.time > 0))
             {
                 glColor4f(frag.color.r,frag.color.g,frag.color.b,
-                           alphaGen(frag.time,f_time,frag.color.a) );
+                           alphaGen(frag.time,f_time,l,frag.color.a) );
                 glVertex2i(m,n);
+                break;
             }
             else
             {
                 glColor3f(1,1,1);
                 glVertex2i(m,n);
             }
+        }
         }
         else
         {
@@ -463,42 +470,46 @@ void CSWindow::motionBlur(float t, float f_time){
 void CSWindow::speedLines(Vector seed, float w, float l, float f_time){
     Trace frag;
     glBegin(GL_POINTS);
+    float r,y1,y2;
 
     for(int n = 0; n < cam.Ny; n++)
-        for(int m = 0; m < cam.Nx; m++){
-
+        for(int m = 0; m < cam.Nx; m++)
+        {
         if(!pixelz[n*cam.Nx+m].empty())
         {
             for(unsigned int j = 0; j < pixelz[n*cam.Nx+m].size(); j++)
             {
                 frag = pixelz[n*cam.Nx+m].at(j);
-                if(frag.time <= f_time && (frag.y >= (float)seed.y() || frag.y <= 1 - (float)seed.y()))
+                r = ((f_time - frag.time)/l)/1.5;
+
+                //if(frag.time <= f_time && (frag.y >= (float)seed.y() || frag.y <= 1 - (float)seed.y()))
+                if((f_time-frag.time < l) &&  (f_time-frag.time > 0) &&
+                   /*((frag.y >= 0.1 && frag.y <= 0.2) || (frag.y >= 0.4 && frag.y <= 0.5)
+                    || (frag.y >= 0.7 && frag.y <= 0.8)))*/
+                   (frag.y >= 0.8 || frag.y <= 0.2))
+                   //(frag.y >= 0.8+r/5 || frag.y <= 0.2-r/5))
                 {
+                    glColor4f(frag.color.r,frag.color.g,frag.color.b,1);
                     glColor4f(frag.color.r,frag.color.g,frag.color.b,
-                               alphaGen(frag.time,f_time,frag.color.a) );
+                              alphaGen(frag.time,f_time,l,frag.color.a));
                     glVertex2i(m,n);
                     break;
                 }
                 else
                 {
-                    glColor3f(1,1,1);
+                    glColor3f(.5,.5,.5);
                     glVertex2i(m,n);
                 }
             }
-
         }
         else
         {
-            glColor3f(1,1,1);
+            glColor3f(.5,.5,.5);
             glVertex2i(m,n);
         }
     }
     glEnd();
     glFlush();
-
-
-
-
 }
 void CSWindow::stroboImage(float spacing, float length, float f_time){
     float t1mod,t2mod;
@@ -589,7 +600,19 @@ void CSWindow::displayOutput()
         glFrustum(-1,1,-1,1, n, f);
     }
 
-    //updateGL();
+    updateGL();
+}
+
+void CSWindow::speed()
+{
+    _speed = true;
+    _blur = false;
+}
+
+void CSWindow::blur()
+{
+    _blur = true;
+    _speed = false;
 }
 
 void CSWindow::setGrid()
@@ -612,10 +635,15 @@ void CSWindow::showPatches()
 
 void CSWindow::animate()
 {
-    for(time = 0; time < 20; time+=0.1)
+    _animate = true;
+    if(output)
     {
-        updateGL();
+        for(time = 0; time < 20; time+=0.1)
+        {
+            updateGL();
+        }
     }
+    _animate = false;
 }
 
 void CSWindow::open()

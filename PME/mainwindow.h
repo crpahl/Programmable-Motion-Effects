@@ -16,7 +16,6 @@ private:
 
     // label
     QLabel *speedLines;
-    QLabel *outputLabel;
     QLabel *blurLabel;
     QLabel *Label3;
     QLabel *Label2;
@@ -27,11 +26,10 @@ private:
     QMenu *fileMenu;
     QMenu *debugMenu;
 
-    // button(s)]
+    // button(s)
     QCheckBox *setGrid;
     QCheckBox *lockCamera;
     QCheckBox *patchesButton;
-    QCheckBox *outputButton;
     QRadioButton *speedButton;
     QRadioButton *blurButton;
     QPushButton *switchButton;

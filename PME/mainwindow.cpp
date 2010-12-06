@@ -20,17 +20,16 @@ MainWindow::MainWindow(QWidget *parent): QDialog (parent)
     Label = new QLabel(tr("Patches"));
     Label2 = new QLabel(tr("Lock Camera"));
     Label3 = new QLabel(tr("Grid"));
-    outputLabel = new QLabel(tr("Render"));
     speedLines = new QLabel(tr("Speed Lines"));
     blurLabel = new QLabel(tr("Motion Blur"));
 
     lockCamera = new QCheckBox();
     patchesButton = new QCheckBox();
     setGrid = new QCheckBox();
-    outputButton = new QCheckBox();
     speedButton = new QRadioButton();
     blurButton = new QRadioButton();
     setGrid->click();
+    speedButton->click();
     openButton = new QPushButton(tr("open"));
     debugButton = new QPushButton(tr("debug"));
     animateButton = new QPushButton(tr("animate"));
@@ -40,14 +39,13 @@ MainWindow::MainWindow(QWidget *parent): QDialog (parent)
     connect(patchesButton, SIGNAL(clicked()), myWin, SLOT(showPatches()));
     connect(lockCamera, SIGNAL(clicked()), myWin, SLOT(lockCamera()));
     connect(setGrid, SIGNAL(clicked()), myWin, SLOT(setGrid()));
-    connect(outputButton, SIGNAL(clicked()), myWin, SLOT(displayOutput()));
+    connect(switchButton, SIGNAL(clicked()), myWin, SLOT(displayOutput()));
     connect(animateButton, SIGNAL(clicked()), myWin, SLOT(animate()));
+    connect(speedButton, SIGNAL(clicked()), myWin, SLOT(speed()));
+    connect(blurButton, SIGNAL(clicked()), myWin, SLOT(blur()));
 
     QHBoxLayout *bLayout = new QHBoxLayout;
-    //bLayout->addWidget(animateButton);
     bLayout->addWidget(openButton);
-    bLayout->addWidget(outputLabel);
-    bLayout->addWidget(outputButton);
     bLayout->addStretch();
     bLayout->addWidget(Label);
     bLayout->addWidget(patchesButton);
@@ -55,7 +53,6 @@ MainWindow::MainWindow(QWidget *parent): QDialog (parent)
     bLayout->addWidget(setGrid);
     bLayout->addWidget(Label2);
     bLayout->addWidget(lockCamera);
-    //bLayout->addWidget(debugButton);
     layout->addLayout(bLayout);
 
     QHBoxLayout *cLayout = new QHBoxLayout;
