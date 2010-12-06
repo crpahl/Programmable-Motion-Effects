@@ -36,6 +36,7 @@ public slots:
         void showPatches();
         void lockCamera();
         void setGrid();
+        void displayOutput();
 protected:
 	void initializeGL();
 	void resizeGL(int width, int height);
@@ -58,9 +59,14 @@ private:
 
         Vector *gaze, *up, *eye;
         Camera cam;                 //The camera that generates rays
+
         bool displayPatches;
         bool lock;
         bool displayGrid;
+        bool output;
+
+        int w, h;
+
         Parser *p;
 	QPoint lastPos;
 	GLfloat rotX;

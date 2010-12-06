@@ -22,6 +22,7 @@ CSWindow::CSWindow(QWidget *parent) : QGLWidget(parent)
         displayPatches = false;
         displayGrid = true;
         lock = false;
+        output = false;
         p = NULL;
 
         //setting the up and gaze vectors of the camera
@@ -60,6 +61,10 @@ void CSWindow::resizeGL(int width, int height)
 
         cam.initCamera(*up, *gaze, *eye, n, top, right, bott, left, width, height);*/
 
+        //setting global width/height
+        w = width;
+        h = height;
+
         GLdouble n, f;
         glLoadIdentity();
         glMatrixMode(GL_PROJECTION);
@@ -83,114 +88,196 @@ void CSWindow::paintGL()
 
 void CSWindow::draw()
 {
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glColor3f(0,0,0);
-
-    if(lock)
+    switch(output)
     {
-        //gluLookAt(0, 0, 0, 2500, 1000, -5000, 0, 1, 0);
-        gluLookAt(0, 0, 0, gaze->x(), gaze->y(), gaze->z(), 0, 1, 0);
-    }
-    else
-    {
-        //re-orientating the camera to view scene
-        glRotatef(180,1.0,0.0,0.0);
-        glRotatef(180,0.0,1.0,0.0);
-        //roating based on mouse movements
-        glRotatef(rotY,1.0,0.0,0.0);
-        glRotatef(rotX,0.,1.0,0.0);
-        //translating initial camera position
-        glTranslatef(-500,-500,-1500);
-        //translating based on key movements
-        glTranslatef(CameraPosX,0,0);
-        glTranslatef(0,CameraPosY,0);
-        glTranslatef(0,0,CameraPosZ);
-    }
+        //Case where render mode is on, render animation or checkerboard scene
+        //if no animation available to display
+        case true:
+        {
 
-    if(displayGrid)
-    {
-        glColor4f(0,0,0,.5);
-        glBegin(GL_LINES);
-            //glColor3f(1,0,0);
-            //glVertex3f(0,0,0);
-            for (int i = 300; i < 10000; i+=300){
-
-            glVertex3f(0,0,-i);
-            glVertex3f(10000,0,-i);
+                glMatrixMode(GL_PROJECTION);
 
 
-            glVertex3f(0,0,-i);
-            glVertex3f(0,10000,-i);
+                glLoadIdentity();
+                gluOrtho2D(0.0, (GLfloat)w, 0.0, (GLfloat)h);
+                glDisable(GL_DEPTH_TEST);
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+                //////TESTING THIS///////////////////////////////
+                if(num_taos > 0)
+                {
 
-            glVertex3f(i,0,0);
-            glVertex3f(i,0,-10000);
+                    glPointSize(1.0);
+                    glBegin(GL_POINTS);
+                    int count, count2;
+                    count = count2 = 0;
+                    for(int n = 0; n < cam.Ny; n++)
+                        for(int m = 0; m < cam.Nx; m++){
 
-            glVertex3f(0,i,0);
-            glVertex3f(0,i,-10000);
-        }
-         glEnd();
-
-         glBegin(GL_LINES);
-             glColor3f(1,0,0);
-             glVertex3f(0,0,0);
-             glVertex3f(10000,0,0);
-
-             glColor3f(0,1,0);
-             glVertex3f(0,0,0);
-             glVertex3f(0,10000,0);
-
-             glColor3f(0,0,1);
-             glVertex3f(0,0,0);
-             glVertex3f(0,0,-10000);
-
-         glEnd();
-    }
+                        if(!pixelz[n*cam.Nx+m].empty()){
+                            Trace frag = pixelz[n*cam.Nx+m].at(0);
+                            glColor4f(frag.color.r,frag.color.g,frag.color.b, frag.color.a);
+                            glVertex2i(m,n);
 
 
-
-    if(num_taos > 0)
-     {
-        //this->render();   //Uncomment to render scene
-
-        glColor3f(0,0,0);
-        glBegin(GL_LINES);
-            glVertex3f(testRay.o.x(),testRay.o.y(),testRay.o.z() );
-            glVertex3f(testRay.o.x()+testRay.d.x()*5000,testRay.o.y()+testRay.d.y()*5000,testRay.o.x()+testRay.d.z()*5000);
-        glEnd();
-
-        //glPointSize(2.0);
-        glBegin(GL_POINTS);
-        int count, count2;
-        count = count2 = 0;
-        for(int n = 0; n < cam.Ny; n++)
-            for(int m = 0; m < cam.Nx; m++){
-
-            if(!pixelz[n*cam.Nx+m].empty()){
-                    Trace frag = pixelz[n*cam.Nx+m].at(0);
-                    if(frag.time < 10)
-                    {
-                        if(frag.y < 0.1 || frag.y > 0.9)
-                        {
-                          glColor4f(frag.color.r,frag.color.g,frag.color.b, frag.color.a);
-                          glVertex2i(m,n);
                         }
+                        else
+                        {
+                            glColor3f(1,1,1);
+                            glVertex2i(m,n);
+                        }
+                    }
+                    glEnd();
+                    glFlush();
+                }
+                /////TESTING THIS /////////////////////////
+                else
+                {
+                    int i,j,c;
+                    GLubyte checkImage[h][w][3];
+
+
+                    for(i=0; i <h; i++)
+                        for(j =0; j < w; j++){
+                            c = (((i&0x8)==0)^((j&0x8)==0))*255;
+                            checkImage[i][j][0] = (GLubyte) c;
+                            checkImage[i][j][1] = (GLubyte) c;
+                            checkImage[i][j][2] = (GLubyte) c;
+                    }
+
+                    glShadeModel(GL_FLAT);
+                    glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+
+                    glClear(GL_COLOR_BUFFER_BIT);
+                    glRasterPos2i(0,0);
+
+                    glDrawPixels(w,h, GL_RGB,GL_UNSIGNED_BYTE, checkImage);
+                    glFlush();
+                 }
+
+            break;
+        }
+        case false:
+        {
+
+            glEnable(GL_DEPTH_TEST);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            glColor3f(0,0,0);
+
+            if(lock)
+            {
+                //gluLookAt(0, 0, 0, 2500, 1000, -5000, 0, 1, 0);
+                gluLookAt(0, 0, 0, gaze->x(), gaze->y(), gaze->z(), 0, 1, 0);
+            }
+            else
+            {
+                //re-orientating the camera to view scene
+                glRotatef(180,1.0,0.0,0.0);
+                glRotatef(180,0.0,1.0,0.0);
+                //roating based on mouse movements
+                glRotatef(rotY,1.0,0.0,0.0);
+                glRotatef(rotX,0.,1.0,0.0);
+                //translating initial camera position
+                glTranslatef(-500,-500,-1500);
+                //translating based on key movements
+                glTranslatef(CameraPosX,0,0);
+                glTranslatef(0,CameraPosY,0);
+                glTranslatef(0,0,CameraPosZ);
+            }
+
+            if(displayGrid)
+            {
+                glColor4f(0,0,0,.5);
+                glBegin(GL_LINES);
+                    //glColor3f(1,0,0);
+                    //glVertex3f(0,0,0);
+                    for (int i = 300; i < 10000; i+=300){
+
+                    glVertex3f(0,0,-i);
+                    glVertex3f(10000,0,-i);
+
+
+                    glVertex3f(0,0,-i);
+                    glVertex3f(0,10000,-i);
+
+                    glVertex3f(i,0,0);
+                    glVertex3f(i,0,-10000);
+
+                    glVertex3f(0,i,0);
+                    glVertex3f(0,i,-10000);
+                }
+                 glEnd();
+
+                 glBegin(GL_LINES);
+                     glColor3f(1,0,0);
+                     glVertex3f(0,0,0);
+                     glVertex3f(10000,0,0);
+
+                     glColor3f(0,1,0);
+                     glVertex3f(0,0,0);
+                     glVertex3f(0,10000,0);
+
+                     glColor3f(0,0,1);
+                     glVertex3f(0,0,0);
+                     glVertex3f(0,0,-10000);
+
+                 glEnd();
+            }
+
+
+
+            if(num_taos > 0)
+             {
+                this->render();   //Uncomment to render scene
+
+                /*glColor3f(0,0,0);
+                glBegin(GL_LINES);
+                    glVertex3f(testRay.o.x(),testRay.o.y(),testRay.o.z() );
+                    glVertex3f(testRay.o.x()+testRay.d.x()*5000,testRay.o.y()+testRay.d.y()*5000,testRay.o.x()+testRay.d.z()*5000);
+                glEnd();
+
+                //glPointSize(1.0);
+                glBegin(GL_POINTS);
+                int count, count2;
+                count = count2 = 0;
+                for(int n = 0; n < cam.Ny; n++)
+                    for(int m = 0; m < cam.Nx; m++){
+
+                    if(!pixelz[n*cam.Nx+m].empty()){
+                            Trace frag = pixelz[n*cam.Nx+m].at(0);
+                            if(frag.time < 10)
+                            {
+                                if(frag.y < 0.1 || frag.y > 0.9)
+                                {
+                                  glColor4f(frag.color.r,frag.color.g,frag.color.b, frag.color.a);
+                                  glVertex2i(m,n);
+                                }
+                            }
+                            else
+                            {
+                                glColor3f(0,1,0);
+                                glVertex2i(m,n);
+                            }
                     }
                     else
                     {
                         glColor3f(0,1,0);
                         glVertex2i(m,n);
                     }
-            }
-            else
-            {
-                glColor3f(0,1,0);
-                glVertex2i(m,n);
-            }
+                }
+                glEnd();
+                glFlush();*/   ///END
+            ///AHHHHHHHHHHHHHH
+            }////AHHHHHHHHHHHHHHHHHHHHH
+
+            break;
         }
-        glEnd();
-        glFlush();
-     }
+        default:
+        break;
+    }
+
+
 }
 
 
@@ -375,6 +462,25 @@ void CSWindow::render()
 }
 
 /***** Connected Buttons *****/
+
+void CSWindow::displayOutput()
+{
+    output = !output;
+    if(!output){
+        GLdouble n, f;
+        glLoadIdentity();
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+
+        glViewport(0,0,(GLsizei) w, (GLsizei) h);
+
+        n = 1;
+        f = 7000;
+        glFrustum(-1,1,-1,1, n, f);
+    }
+
+    updateGL();
+}
 
 void CSWindow::setGrid()
 {

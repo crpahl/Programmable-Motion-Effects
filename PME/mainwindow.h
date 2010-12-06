@@ -14,10 +14,13 @@ public:
 private:
     void createMenus();
 
-    // menu
+    // label
+    QLabel *outputLabel;
     QLabel *Label3;
     QLabel *Label2;
     QLabel *Label;
+
+    // menu
     QMenuBar *menuBar;
     QMenu *fileMenu;
     QMenu *debugMenu;
@@ -26,10 +29,12 @@ private:
     QCheckBox *setGrid;
     QCheckBox *lockCamera;
     QCheckBox *patchesButton;
+    QCheckBox *outputButton;
     QPushButton *openButton;
     QPushButton *debugButton;
 
     CSWindow *myWin;
+    CSWindow *renWin;
     char *_title;
 };
 

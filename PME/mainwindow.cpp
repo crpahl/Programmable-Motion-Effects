@@ -15,9 +15,11 @@ MainWindow::MainWindow(QWidget *parent): QDialog (parent)
     Label = new QLabel(tr("Patches"));
     Label2 = new QLabel(tr("Lock Camera"));
     Label3 = new QLabel(tr("Grid"));
+    outputLabel = new QLabel(tr("Render"));
     lockCamera = new QCheckBox();
     patchesButton = new QCheckBox();
     setGrid = new QCheckBox();
+    outputButton = new QCheckBox();
     setGrid->click();
     openButton = new QPushButton(tr("open"));
     debugButton = new QPushButton(tr("debug"));
@@ -26,9 +28,12 @@ MainWindow::MainWindow(QWidget *parent): QDialog (parent)
     connect(patchesButton, SIGNAL(clicked()), myWin, SLOT(showPatches()));
     connect(lockCamera, SIGNAL(clicked()), myWin, SLOT(lockCamera()));
     connect(setGrid, SIGNAL(clicked()), myWin, SLOT(setGrid()));
+    connect(outputButton, SIGNAL(clicked()), myWin, SLOT(displayOutput()));
 
     QHBoxLayout *bLayout = new QHBoxLayout;
     bLayout->addWidget(openButton);
+    bLayout->addWidget(outputLabel);
+    bLayout->addWidget(outputButton);
     bLayout->addStretch();
     bLayout->addWidget(Label);
     bLayout->addWidget(patchesButton);
