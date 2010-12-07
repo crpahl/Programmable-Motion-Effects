@@ -1,0 +1,76 @@
+define
+
+color 0 0 1 1
+name triangle
+
+plane
+-250  0     -5500
+0     500   -5500
+250   0     -5500
+done 
+
+done 
+
+translate triangle 0.4 0 200 25
+translate triangle 0.8 0 175 50
+translate triangle 1.2 0 150 75 
+translate triangle 1.6 0 125 100 
+translate triangle 2.0 0 100 125
+translate triangle 2.4 0 75  150
+translate triangle 2.8 0 50  175
+translate triangle 3.2 0 25  200
+
+translate triangle 3.6 0 -200 25
+translate triangle 4.0 0 -175 50
+translate triangle 4.4 0 -150 75 
+translate triangle 4.8 0 -125 100 
+translate triangle 5.2 0 -100 125
+translate triangle 5.6 0 -75  150
+translate triangle 6.0 0 -50  175
+translate triangle 6.4 0 -25  200
+
+translate triangle 6.8 0 200 25
+translate triangle 7.2 0 175 50
+translate triangle 7.6 0 150 75 
+translate triangle 8.0 0 125 100 
+translate triangle 8.4 0 100 125
+translate triangle 8.8 0 75  150
+translate triangle 9.2 0 50  175
+translate triangle 9.6 0 25  200
+
+translate triangle 10   0 -200 25
+translate triangle 10.4 0 -175 50
+translate triangle 10.8 0 -150 75 
+translate triangle 11.2 0 -125 100 
+translate triangle 11.4 0 -100 125
+translate triangle 11.8 0 -75  150
+translate triangle 12.2 0 -50  175
+translate triangle 12.4 0 -25  200
+
+translate triangle 12.8 0 200 25
+translate triangle 13.2 0 175 50
+translate triangle 13.6 0 150 75 
+translate triangle 14.0 0 125 100 
+translate triangle 14.4 0 100 125
+translate triangle 14.8 0 75  150
+translate triangle 15.2 0 50  175
+translate triangle 15.6 0 25  200
+
+translate triangle 16   0 -200 25
+translate triangle 16.4 0 -175 50
+translate triangle 16.8 0 -150 75 
+translate triangle 17.2 0 -125 100 
+translate triangle 17.4 0 -100 125
+translate triangle 17.8 0 -75  150
+translate triangle 18.2 0 -50  175
+translate triangle 18.4 0 -25  200
+
+translate triangle 20	0  0   300
+
+
+
+
+
+
+
+

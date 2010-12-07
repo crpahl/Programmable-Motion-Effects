@@ -21,7 +21,7 @@
 #include <vector>
 
 #define MAX_OBJECTS 100
-#define MAX_BIPLANES 100
+#define MAX_BIPLANES 300
 
 #define FPS 25
 
