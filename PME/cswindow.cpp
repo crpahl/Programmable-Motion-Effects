@@ -92,7 +92,7 @@ void CSWindow::paintGL()
 
 void CSWindow::draw()
 {
-    switch(output)
+    switch(_animate)
     {
         //Case where render mode is on, render animation or checkerboard scene
         //if no animation available to display
@@ -111,11 +111,11 @@ void CSWindow::draw()
                 {
                     if(_speed)
                     {
-                        Vector seed(.1,.95,0);
+                        Vector seed(.1,(threshold/2.0)+0.5,0);
                         this->speedLines(seed,4,4,time);
                     }
                     else if(_blur)
-                        this->motionBlur(4,time);
+                        this->motionBlur(4*threshold,time);
                 }
                 else
                 {
@@ -482,11 +482,13 @@ void CSWindow::speedLines(Vector seed, float w, float l, float f_time){
                 frag = pixelz[n*cam.Nx+m].at(j);
                 r = ((f_time - frag.time)/l)/1.5;
 
-                //if(frag.time <= f_time && (frag.y >= (float)seed.y() || frag.y <= 1 - (float)seed.y()))
+                //if((f_time-frag.time < l) &&  (f_time-frag.time > 0)
+                //  && (frag.y >= (float)seed.y() || frag.y <= 1 - (float)seed.y()))
                 if((f_time-frag.time < l) &&  (f_time-frag.time > 0) &&
                    /*((frag.y >= 0.1 && frag.y <= 0.2) || (frag.y >= 0.4 && frag.y <= 0.5)
                     || (frag.y >= 0.7 && frag.y <= 0.8)))*/
-                   (frag.y >= 0.8 || frag.y <= 0.2))
+                   (frag.y >= (float)seed.y() || frag.y <= (1 - (float)seed.y())))
+                   //(frag.y >= 0.8 || frag.y <= 0.2))
                    //(frag.y >= 0.8+r/5 || frag.y <= 0.2-r/5))
                 {
                     glColor4f(frag.color.r,frag.color.g,frag.color.b,1);
@@ -497,14 +499,14 @@ void CSWindow::speedLines(Vector seed, float w, float l, float f_time){
                 }
                 else
                 {
-                    glColor3f(.5,.5,.5);
+                    glColor3f(1,1,1);
                     glVertex2i(m,n);
                 }
             }
         }
         else
         {
-            glColor3f(.5,.5,.5);
+            glColor3f(1,1,1);
             glVertex2i(m,n);
         }
     }
@@ -584,6 +586,11 @@ void CSWindow::stroboImage(float spacing, float length, float f_time){
 
 /***** Connected Buttons *****/
 
+void CSWindow::setThreshold(int t)
+{
+    threshold = (float)t/100.0f;
+}
+
 void CSWindow::displayOutput()
 {
     output = !output;
@@ -636,14 +643,37 @@ void CSWindow::showPatches()
 void CSWindow::animate()
 {
     _animate = true;
-    if(output)
-    {
-        for(time = 0; time < 20; time+=0.1)
+    //if(output)
+    //{
+        GLdouble n, f;
+        glLoadIdentity();
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+
+        glViewport(0,0,(GLsizei) w, (GLsizei) h);
+
+        n = 1;
+        f = 7000;
+        glFrustum(-1,1,-1,1, n, f);
+
+        for(time = 0; time < 20; time+=0.3)
         {
             updateGL();
         }
-    }
+    //}
     _animate = false;
+
+    glLoadIdentity();
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    glViewport(0,0,(GLsizei) w, (GLsizei) h);
+
+    n = 1;
+    f = 7000;
+    glFrustum(-1,1,-1,1, n, f);
+
+    updateGL();
 }
 
 void CSWindow::open()

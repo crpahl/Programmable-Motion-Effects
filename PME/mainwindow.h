@@ -17,6 +17,7 @@ private:
     // label
     QLabel *speedLines;
     QLabel *blurLabel;
+    QLabel *sliderLabel;
     QLabel *Label3;
     QLabel *Label2;
     QLabel *Label;
@@ -36,6 +37,9 @@ private:
     QPushButton *openButton;
     QPushButton *debugButton;
     QPushButton *animateButton;
+
+    //slider
+    QSlider *Slider;
 
     CSWindow *myWin;
     CSWindow *renWin;

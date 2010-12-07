@@ -42,6 +42,7 @@ public slots:
         void animate();
         void speed();
         void blur();
+        void setThreshold(int f);
 protected:
 	void initializeGL();
 	void resizeGL(int width, int height);
@@ -84,6 +85,7 @@ private:
         bool _blur;
 
         int w, h;
+        float threshold;
         float time;
 
         Parser *p;
