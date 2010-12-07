@@ -1,3 +1,11 @@
+/*
+    Authors: Adel Lari, Clinton Pahl, Date: 07/2010
+
+    This is class is basically a simple container used to hold
+    all samples parsed from the input file and contains the appropiate
+    methods to draw them in openGL.
+*/
+
 //#pragma once
 #ifndef Object3D_H
 #define Object3D_H
@@ -11,6 +19,7 @@
 #define MAX_VERTICIES 100
 
 
+// Stores a point
 struct point3D{
 	float x;
 	float y;
@@ -20,6 +29,7 @@ struct point3D{
         bool operator==(point3D &b);
 };
 
+// Stores the color of a point
 struct color3D{
 	float r;
 	float g;
@@ -29,6 +39,7 @@ struct color3D{
 	color3D& operator=(Color &_b);
 };
 
+// Stores the planes used to create an object
 struct plane3D{
 	int amt_verts; //Size of arrays holding both colors and points
 	point3D points[MAX_PLANE_POINTS];

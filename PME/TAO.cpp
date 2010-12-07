@@ -21,6 +21,8 @@ bool biPlane3D::operator==(biPlane3D &b){
 TAO::TAO(){
 }
 
+// Initializes the TAO with all of the samples within
+// an object
 TAO::TAO(Object obj)
 {
 	this->obj = obj;
@@ -33,10 +35,15 @@ TAO::~TAO(void)
 {
 }
 
+// Returns a sample form the TAO
 Object3D TAO::getObject(int i){
     return this->objects[i];
 }
 
+// Initializes the TAO using the samples stored in
+// given object.  Every sample is iterated over and a bilinear
+// patch is created for every adjacent edge between two adjacent
+// samples.
 void TAO::initTAO()
 {
 		point3D newPoint; 
@@ -81,6 +88,7 @@ void TAO::initTAO()
 }
 
 
+//Creates every bilinear patch needed to construct the TAO
 void TAO::createBiPlanes(){
     int totalPlanepts;
     int count = 0;
@@ -131,6 +139,7 @@ void TAO::createBiPlanes(){
 }
 	
 
+// Draws every bilinear patch within the TAO.
 void TAO::drawBiPlanes(){
 
 
@@ -158,6 +167,8 @@ void TAO::drawBiPlanes(){
 
 }
 
+
+//Draws every object within the TAO
 void TAO::drawObjects(){
 
 	for (int i=0; i < this->obj_amt; i++){

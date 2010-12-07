@@ -1,3 +1,11 @@
+/*
+    Authors: Adel Lari, Clinton Pahl, Date: 07/2010
+
+    A simple parser that reads a user supplied text file to
+    create objects and position additional samples at the
+    supplied times.
+*/
+
 #ifndef Parser_H
 #define Parser_H
 

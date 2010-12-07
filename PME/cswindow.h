@@ -1,3 +1,13 @@
+/*
+    Authors: Adel Lari, Clinton Pahl, Date: 07/2010
+
+    The main portion of our code is contained within this class.
+    All openGL rendering camera manipulation are handled here.
+    This method also contains the code that allows us to display
+    the time aggregate objects, render them correctly and display
+    the final animation.
+*/
+
 #ifndef CSWINDOW_H
 #define CSWINDOW_H
 #include <QGLWidget>

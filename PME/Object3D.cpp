@@ -70,6 +70,7 @@ void Object3D::setTime(float t){
 	this->time = t;
 }
 
+// Sets the total number of points used to create the object
 void Object3D::setTotalVerts(){
 	//this->total_verts = t;
 	int count = 0;
@@ -80,6 +81,7 @@ void Object3D::setTotalVerts(){
 	this->total_verts = count;
 }
 
+// Sets the total number of planes used to create the object
 void Object3D::setTotalPlanes(int t){
 	this->total_planes = t;
 
@@ -89,7 +91,8 @@ void Object3D::setTotalPlanes(int t){
 void Object3D::setPlane(int i, plane3D a){
 	this->planes[i] = a;
 }
-//LULZ FIX THIS MEHTOD WHEN I GET A CHANCE ITS VERY WRONG
+// Iterates through every point in the object to create a
+// single array that can be used to render the object
 void Object3D::makeDrawArray(){
 	//int totalItr = this->total_verts*24;
 
@@ -125,6 +128,7 @@ void Object3D::makeDrawArray(){
 		
 }
 
+// Draws the Object
 void Object3D::drawObject(){
 	this->makeDrawArray();
 

@@ -65,10 +65,11 @@ void CSWindow::resizeGL(int width, int height)
 
         cam.initCamera(*up, *gaze, *eye, n, top, right, bott, left, width, height);*/
 
-        //setting global width/height
+        //Setting global width/height
         w = width;
         h = height;
 
+        //Initializing viewport and frustrum
         GLdouble n, f;
         glLoadIdentity();
         glMatrixMode(GL_PROJECTION);
@@ -80,6 +81,7 @@ void CSWindow::resizeGL(int width, int height)
         f = 7000;
         glFrustum(-1,1,-1,1, n, f);
 
+        //Initializing the camera that will be used to project rays
         cam.initCamera(*up, *gaze, *eye, n, 1, 1, -1, -1, width, height);
 }
 
@@ -109,11 +111,13 @@ void CSWindow::draw()
 
                 if(num_taos > 0 && _animate)
                 {
+                    //Animates speed lines
                     if(_speed)
                     {
                         Vector seed(.1,(threshold/2.0)+0.5,0);
                         this->speedLines(seed,4,4,time);
                     }
+                    //Animates motion blur
                     else if(_blur)
                         this->motionBlur(4*threshold,time);
                 }
@@ -150,6 +154,7 @@ void CSWindow::draw()
             glLoadIdentity();
             glColor3f(0,0,0);
 
+            //Locks the camera to the position that rays are projected from
             if(lock)
             {
                 //gluLookAt(0, 0, 0, 2500, 1000, -5000, 0, 1, 0);
@@ -171,6 +176,7 @@ void CSWindow::draw()
                 glTranslatef(0,0,CameraPosZ);
             }
 
+            //Renders a grid for the coordinate axes
             if(displayGrid)
             {
                 glColor4f(0,0,0,.5);
@@ -211,7 +217,7 @@ void CSWindow::draw()
             }
 
 
-
+            //Renders the 3D scene
             if(num_taos > 0)
             {
                 this->render();   //Uncomment to render scene
@@ -280,6 +286,9 @@ void CSWindow::keyPressEvent(QKeyEvent *event)
 
 /***** Helper Methods *****/
 
+// Projects rays from the camera. For each intersection the
+// appropiate algorithms are used to determine the properties
+// that need to be stored in a pixel to render the 2D animation.
 void CSWindow::trace()
 {
     std::cout << "Begin trace..." << std::endl;
@@ -307,6 +316,7 @@ void CSWindow::trace()
             {
                 for(int k =0; k < taos[i].biPlanes_amt; k++)
                 {
+                        //Creating the paramters needed for the bilinear patch algorithm
                         p00.x(taos[i].bi_planes[k].points[0].x);
                         p00.y(taos[i].bi_planes[k].points[0].y);
                         p00.z(taos[i].bi_planes[k].points[0].z);
@@ -384,6 +394,7 @@ void CSWindow::setPixel(int x, int y, Color c)
     p[i] = c;*/
 }
 
+// Grabing the objects stored in the parser to create the TAO
 void CSWindow::createTAOs()
 {
     TAO *tao;
@@ -399,6 +410,7 @@ void CSWindow::createTAOs()
     }
 }
 
+// Rendering the TAO in 3D
 void CSWindow::render()
 {
     for(int i = 0; i < num_taos; i++)
@@ -419,13 +431,15 @@ float CSWindow::alphaGen(float tn, float tf, float l, float alpha)
     return a/2;
 }
 
+// Renders the 2D motion blur animation
 void CSWindow::motionBlur(float l, float f_time){
 //ensure t is between 0 and 1
 
     glBegin(GL_POINTS);
     //float min_scalar;
-    Trace frag, temp_frag;
+    Trace frag;
 
+    //Iterating over every pixel to determine if it needs to be set
     for(int n = 0; n < cam.Ny; n++)
         for(int m = 0; m < cam.Nx; m++){
 
@@ -444,6 +458,8 @@ void CSWindow::motionBlur(float l, float f_time){
             }*/
 
             frag = pixelz[n*cam.Nx+m].at(j);
+
+            //If a trace fragment is within the time interval display it
             if((f_time-frag.time < l) &&  (f_time-frag.time > 0))
             {
                 glColor4f(frag.color.r,frag.color.g,frag.color.b,
@@ -467,10 +483,12 @@ void CSWindow::motionBlur(float l, float f_time){
     glEnd();
     glFlush();
 }
+
+// Renders the 2D speed lines animation
 void CSWindow::speedLines(Vector seed, float w, float l, float f_time){
     Trace frag;
     glBegin(GL_POINTS);
-    float r,y1,y2;
+    float r;
 
     for(int n = 0; n < cam.Ny; n++)
         for(int m = 0; m < cam.Nx; m++)
@@ -482,6 +500,7 @@ void CSWindow::speedLines(Vector seed, float w, float l, float f_time){
                 frag = pixelz[n*cam.Nx+m].at(j);
                 r = ((f_time - frag.time)/l)/1.5;
 
+                //Checking that a pixel falls between a certain time interval and height
                 //if((f_time-frag.time < l) &&  (f_time-frag.time > 0)
                 //  && (frag.y >= (float)seed.y() || frag.y <= 1 - (float)seed.y()))
                 if((f_time-frag.time < l) &&  (f_time-frag.time > 0) &&
@@ -513,13 +532,15 @@ void CSWindow::speedLines(Vector seed, float w, float l, float f_time){
     glEnd();
     glFlush();
 }
+
+// Renders the 2D strobophobic animation
 void CSWindow::stroboImage(float spacing, float length, float f_time){
-    float t1mod,t2mod;
 
     glPointSize(1.0);
     glBegin(GL_POINTS);
     //glColor3f(1,1,1);
 
+    //Iterating over every pixel
     for(int n = 0; n < cam.Ny; n++)
     {
         for(int m = 0; m < cam.Nx; m++)
@@ -640,6 +661,7 @@ void CSWindow::showPatches()
     updateGL();
 }
 
+// The main animation loops
 void CSWindow::animate()
 {
     _animate = true;
@@ -676,6 +698,7 @@ void CSWindow::animate()
     updateGL();
 }
 
+// Opens a file to be passed to the parser
 void CSWindow::open()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
@@ -698,6 +721,7 @@ void CSWindow::open()
     }
 }
 
+// Prints all objects read from the parser
 void CSWindow::debug()
 {
     if(p != NULL)

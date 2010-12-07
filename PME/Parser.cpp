@@ -12,7 +12,7 @@ Parser::Parser(char *file)
 	inputFile = file;
 }
 
-
+// Parses all lines in the input file and handles them appropiately
 int Parser::parse(void)
 {
 	//open the text file for reading
@@ -50,6 +50,7 @@ int Parser::parse(void)
 					obj = createObject(in);
 					objects.push_back(obj);
 				}
+                                //translates a sample
 				else if(!word.compare("translate"))
 				{
 
@@ -133,22 +134,26 @@ Object Parser::createObject(ifstream &in)
 			{
 				word = wordVec.at(0);
 
+                                //setting the name
 				if(!word.compare("name"))
 				{
 					obj.name = wordVec.at(1);
 				}
+                                //parsing and setting a plane
 				else if(!word.compare("plane"))
 				{
 					memset(&plane, 0, sizeof(MyPlane));
 					storePoints(plane, in);
 					samp.planes[samp.nPlanes++] = plane;
 				}
+                                //setting a color
 				else if(!word.compare("color"))
 				{
 					obj.color = createColor(wordVec.at(1), wordVec.at(2),
 											wordVec.at(3), wordVec.at(4));
 					obj.globalColor = true;
 				}
+                                //finished creating the object
 				else if(!word.compare("done"))
 				{
 					//storing sample in newly created object

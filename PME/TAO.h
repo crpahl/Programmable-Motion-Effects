@@ -1,3 +1,11 @@
+/*
+    Authors: Adel Lari, Clinton Pahl, Date: 07/2010
+
+    This class stores the representation of the time aggregate
+    object TAO. It is composed of objects and bilinear patches
+    and contains the appropiate methods to draw the TAO itself.
+*/
+
 #pragma once
 
 #ifndef TAO_H

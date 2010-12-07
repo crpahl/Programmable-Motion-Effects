@@ -1,3 +1,10 @@
+/*
+    Authors: Adel Lari, Clinton Pahl, Date: 07/2010
+
+    Contains basic GUI code used to set up the initial
+    display window.
+*/
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #include "cswindow.h"
